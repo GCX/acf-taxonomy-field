@@ -128,11 +128,26 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 */
 	public function admin_print_scripts() {
 		global $pagenow;
-//		wp_register_script( 'acf-taxonomy-field', $this->base_uri_abs . '/taxonomy-field.js', array( 'jquery-ui-sortable' ) );
+//		wp_register_script( 'acf-taxonomy-field', $this->base_uri_abs . '/taxonomy-field.js', array( 'jquery' ) );
 		
 		if( in_array( $pagenow, array( 'post.php', 'post-new.php' ) ) ) {
 //			wp_enqueue_script( 'acf-taxonomy-field' );
 		}
+	}
+	
+	/**
+	 * Populates the fields array with defaults for this field type
+	 * 
+	 * @param array $field
+	 * @return array
+	 */
+	private function set_field_defaults( &$field ) {
+		$field[ 'taxonomy' ]        = ( array_key_exists( 'taxonomy', $field ) && isset( $field[ 'taxonomy' ] ) ) ? $field[ 'taxonomy' ] : 'category';
+		$field[ 'input_type' ]      = ( array_key_exists( 'input_type', $field ) && isset( $field[ 'input_type' ] ) ) ? $field[ 'input_type' ] : 'select';
+		$field[ 'input_size' ]      = ( array_key_exists( 'input_size', $field ) && isset( $field[ 'input_size' ] ) ) ? (int) $field[ 'input_size' ] : 5;
+//		$field[ 'allow_new_terms' ] = ( array_key_exists( 'allow_new_terms', $field ) && isset( $field[ 'allow_new_terms' ] ) ) ? (int) $field[ 'allow_new_terms' ] : 0; //false
+		$field[ 'set_post_terms' ]  = ( array_key_exists( 'set_post_terms', $field ) && isset( $field[ 'set_post_terms' ] ) ) ? (int) $field[ 'set_post_terms' ] : 1; //true
+		return $field;
 	}
 	
 	/**
@@ -141,7 +156,22 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @see acf_Field::create_field()
 	 */
 	public function create_field( $field ) {
+		$this->set_field_defaults( $field );
+		global $logger;
+		$logger->debug(var_export($field, true));
 		
+		$terms = get_terms( $field['taxonomy'], array( 'hide_empty' => false ) );
+		$value = $field[ 'value' ];
+		
+		if( in_array( $field[ 'input_type' ], array( 'select', 'multiselect' ) ) ) :
+		?>
+			<select name="<?php echo $field[ 'name' ]; ?>[]" id="<?php echo $field[ 'name' ]; ?>" class="<?php echo $field[ 'class' ]; ?>" <?php echo ( $field[ 'input_type' ] == 'multiselect' ) ? 'multiple="multiple" size="' . $field[ 'input_size' ] . '"' : ''; ?>>
+				<?php foreach( $terms as $term ) : ?>
+					<option value="<?php echo $term->term_id; ?>" <?php selected( in_array( $term->term_id, $value, true ) ); ?>><?php echo $term->name; ?></option>
+				<?php endforeach; ?>
+			</select>
+		<?php
+		endif;
 	}
 	
 	/**
@@ -152,6 +182,118 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @param array $field
 	 */
 	public function create_options( $key, $field ) {
+		$this->set_field_defaults( $field );
+		
+		$taxonomies = get_taxonomies( array(), 'objects' );
+		ksort( $taxonomies );
+		$tax_choices = array();
+		foreach( $taxonomies as $tax )
+			$tax_choices[ $tax->name ] = $tax->label;
+		
+		?>
+			<tr class="field_option field_option_<?php echo $this->name; ?>">
+				<td class="label">
+					<label><?php _e( 'Taxonomy' , $this->l10n_domain ); ?></label>
+					<p class="description"><?php _e( 'Select the taxonomy to display.', $this->l10n_domain ); ?></p>
+				</td>
+				<td>
+					<?php 
+						$this->parent->create_field( array(
+							'type'    => 'select',
+							'name'    => "fields[{$key}][taxonomy]",
+							'value'   => $field[ 'taxonomy' ],
+							'choices' => $tax_choices,
+						) );
+					?>
+				</td>
+			</tr>
+			<tr class="field_option field_option_<?php echo $this->name; ?>">
+				<td class="label">
+					<label><?php _e( 'Input Method' , $this->l10n_domain ); ?></label>
+					<p class="description"><?php _e( '', $this->l10n_domain ); ?></p>
+				</td>
+				<td>
+					<?php 
+						$this->parent->create_field( array(
+							'type'    => 'select',
+							'name'    => "fields[{$key}][input_type]",
+							'value'   => $field[ 'input_type' ],
+							'class'   => 'taxonomy_input_type',
+							'choices' => array(
+								'select'      => 'Select',
+								'multiselect' => 'Multi-Select',
+								//'token'       => 'Input Tokenizer',
+							),
+						) );
+					?>
+				</td>
+			</tr>
+			<tr class="field_option field_option_<?php echo $this->name; ?>">
+				<td class="label">
+					<label><?php _e( 'Set Post Terms' , $this->l10n_domain ); ?></label>
+					<p class="description"><?php _e( 'Add the selected term(s) to the post. The current post must support the selected taxonomy for this to work.', $this->l10n_domain ); ?></p>
+				</td>
+				<td>
+					<?php 
+						$this->parent->create_field( array(
+							'type'  => 'true_false',
+							'name'  => "fields[{$key}][set_post_terms]",
+							'value' => $field[ 'set_post_terms' ],
+						) );
+					?>
+				</td>
+			</tr>
+<!--
+			<tr class="field_option field_option_<?php echo $this->name; ?> taxonomy_add_terms">
+				<td class="label">
+					<label><?php _e( 'Add New Terms' , $this->l10n_domain ); ?></label>
+					<p class="description"><?php _e( 'Add any new terms to the selected taxonomy.', $this->l10n_domain ); ?></p>
+				</td>
+				<td>
+					<?php 
+						$this->parent->create_field( array(
+							'type'  => 'true_false',
+							'name'  => "fields[{$key}][allow_new_terms]",
+							'value' => $field[ 'allow_new_terms' ],
+						) );
+					?>
+				</td>
+			</tr>
+-->
+			<tr class="field_option field_option_<?php echo $this->name; ?> taxonomy_input_size">
+				<td class="label">
+					<label><?php _e( 'Multi-Select Size' , $this->l10n_domain ); ?></label>
+					<p class="description"><?php _e( 'The number of terms to show at once in a multi-select.', $this->l10n_domain ); ?></p>
+				</td>
+				<td>
+					<?php 
+						$this->parent->create_field( array(
+							'type'    => 'select',
+							'name'    => "fields[{$key}][input_size]",
+							'value'   => $field[ 'input_size' ],
+							'choices' => array_combine( range( 3, 15, 2 ), range( 3, 15, 2 ) ),
+						) );
+					?>
+				</td>
+			</tr>
+		<?php
+	}
+	
+	public function update_value( $post_id, $field, $value ) {
+		$this->set_field_defaults( $field );
+		
+		if( $field[ 'set_post_terms' ] ) {
+			$terms = array();
+			foreach( (array) $value as $item ) {
+				if( intval( $item ) > 0 )
+					$terms[] = intval( $item );
+				else
+					$terms[] = strval( $item );
+			}
+			$value = wp_set_object_terms( $post_id, $terms, $field[ 'taxonomy' ], false );
+		}
+		
+		return parent::update_value( $post_id, $field, $value );
 	}
 	
 	/**
@@ -163,7 +305,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @return mixed  
 	 */
 	public function get_value( $post_id, $field ) {
-		return parent::get_value( $post_id, $field );
+		$value = (array) parent::get_value( $post_id, $field );
+		return $value;
 	}
 	
 	/**
@@ -230,6 +373,12 @@ class ACF_Taxonomy_Field_Helper {
 	*/
 	const L10N_DOMAIN = 'acf-taxonomy-field';
 	
+	/**
+	 * Language directory path
+	 * 
+	 * Used to build the path for WordPress localization files.
+	 * @var string
+	 */
 	private $lang_dir;
 	
 	/**
@@ -238,14 +387,14 @@ class ACF_Taxonomy_Field_Helper {
 	private function __construct() {
 		$this->lang_dir = rtrim( dirname( realpath( __FILE__ ) ), '/' ) . '/languages';
 		
-		add_action( 'init', array( &$this, 'register_address_field' ), 5, 0 );
-		add_action( 'init', array( &$this, 'load_textdomain' ), 2, 0 );
+		add_action( 'init', array( &$this, 'register_field' ), 5, 0 );
+		add_action( 'init', array( &$this, 'load_textdomain' ),        2, 0 );
 	}
 	
 	/**
-	 * Registers the Address Field with Advanced Custom Fields
+	 * Registers the Field with Advanced Custom Fields
 	 */
-	public function register_address_field() {
+	public function register_field() {
 		if( function_exists( 'register_field' ) ) {
 			register_field( 'ACF_Taxonomy_Field', __FILE__ );
 		}
