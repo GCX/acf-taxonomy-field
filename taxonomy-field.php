@@ -157,8 +157,6 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 */
 	public function create_field( $field ) {
 		$this->set_field_defaults( $field );
-		global $logger;
-		$logger->debug(var_export($field, true));
 		
 		$terms = get_terms( $field['taxonomy'], array( 'hide_empty' => false ) );
 		$value = $field[ 'value' ];
