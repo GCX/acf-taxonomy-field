@@ -1,5 +1,18 @@
 <?php
 /*
+* Plugin Name: Advanced Custom Fields - Taxonomy Field add-on
+* Plugin URI:  https://github.com/GCX/acf-taxonomy-field
+* Description: This plugin is an add-on for Advanced Custom Fields. It provides a dropdown of taxonomy terms and the ability to map the selected terms to the post.
+* Author:      Brian Zoetewey
+* Author URI:  https://github.com/GCX
+* Version:     1.0
+* Text Domain: acf-taxonomy-field
+* Domain Path: /languages/
+* License:     Modified BSD
+*/
+?>
+<?php
+/*
  * Copyright (c) 2012, CAMPUS CRUSADE FOR CHRIST
  * All rights reserved.
  * 
@@ -277,6 +290,10 @@ class ACF_Taxonomy_Field extends acf_Field {
 		<?php
 	}
 	
+	/**
+	 * (non-PHPdoc)
+	 * @see acf_Field::update_value()
+	 */
 	public function update_value( $post_id, $field, $value ) {
 		$this->set_field_defaults( $field );
 		
@@ -291,7 +308,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 			$value = wp_set_object_terms( $post_id, $terms, $field[ 'taxonomy' ], false );
 		}
 		
-		return parent::update_value( $post_id, $field, $value );
+		parent::update_value( $post_id, $field, $value );
 	}
 	
 	/**
@@ -326,12 +343,6 @@ if( !class_exists( 'ACF_Taxonomy_Field_Helper' ) ) :
 
 /**
  * Advanced Custom Fields - Taxonomy Field Helper
- * 
- * This class is a singleton thats primary job is to register the Taxonomy Field
- * with Advanced Custom Fields. Developers using this field do not need to worry
- * about how to register it with Advanced Custom Fields. Simply include this 
- * php file and the ACF_Taxonomy_Field_Helper does the rest.
- * <code> include_once( rtrim( dirname( __FILE__ ), '/' ) . '/acf-taxonomy-field/taxonomy-field.php' ); </code>
  * 
  * @author Brian Zoetewey <brian.zoetewey@ccci.org>
  */
@@ -385,8 +396,8 @@ class ACF_Taxonomy_Field_Helper {
 	private function __construct() {
 		$this->lang_dir = rtrim( dirname( realpath( __FILE__ ) ), '/' ) . '/languages';
 		
-		add_action( 'init', array( &$this, 'register_field' ), 5, 0 );
-		add_action( 'init', array( &$this, 'load_textdomain' ),        2, 0 );
+		add_action( 'init', array( &$this, 'register_field' ),  5, 0 );
+		add_action( 'init', array( &$this, 'load_textdomain' ), 2, 0 );
 	}
 	
 	/**
