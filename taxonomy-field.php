@@ -333,7 +333,9 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @return string
 	 */
 	public function get_value_for_api( $post_id, $field ) {
-		return parent::get_value_for_api($post_id, $field);
+		$this->set_field_defaults( $field );
+		$value = parent::get_value_for_api($post_id, $field);
+		return get_the_term_list( $post_id, $field[ 'taxonomy' ] );
 	}
 }
 
