@@ -3,7 +3,7 @@ Contributors: Omicron7
 Tags: acf, acf add-on, taxonomy, custom field, taxonomy field
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.0
+Stable tag: 1.1
 
 Adds a Taxonomy Field to Advanced Custom Fields. Select one or more taxonomy terms and assign them to the post.
 
@@ -15,19 +15,18 @@ and activated.
 
 The taxonomy field provides a dropdown (select or multi-select) of taxonomy terms (categories, tags, custom taxonomies...)
 and the ability to map the selected terms to the post. The post type must support the taxonomy for the mapping to work.
-The taxonomy field currently does not provide the ability to add new terms to a taxonomy. The get_value() api returns
-an array of the selected term ids.
+The taxonomy field currently does not provide the ability to add new terms to a taxonomy. The `get_value()` api returns
+a list of taxonomy links similar to WordPress `get_the_term_list()`.
 
 = Source Repository on GitHub =
 https://github.com/GCX/acf-taxonomy-field
 
-= Bugs or Suggestions =
+= Bugs, Questions or Suggestions =
 https://github.com/GCX/acf-taxonomy-field/issues
 
 = Todo =
 * Add ability to add new terms to a taxonomy
 * Add more term selection methods (checkboxes, token input).
-* Improve the `get_value()` api call to return html using `the_terms()` WordPress method.
 
 == Installation ==
 
@@ -56,6 +55,11 @@ activated. This is not a standalone plugin for WordPress, it only adds additiona
 3. Adding a term to a page.
 
 == Changelog ==
+
+= 1.1 =
+* Improved get_value API call. Using `get_value()` now returns a string of term links. Similar to WordPress `get_the_term_list()`.
+* Fixed an issue with terms not being pre-selected when editing a post.
+* Fixed a localization variable name typo.
 
 = 1.0 =
 * Initial Release

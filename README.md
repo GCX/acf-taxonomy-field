@@ -12,13 +12,13 @@ and activated.
 
 The taxonomy field provides a dropdown (select or multi-select) of taxonomy terms (categories, tags, custom taxonomies...)
 and the ability to map the selected terms to the post. The post type must support the taxonomy for the mapping to work.
-The taxonomy field currently does not provide the ability to add new terms to a taxonomy. The get_value() api returns
-an array of the selected term ids.
+The taxonomy field currently does not provide the ability to add new terms to a taxonomy. The `get_value()` api returns
+a list of taxonomy links similar to WordPress `get_the_term_list()`.
 
 ### Source Repository on GitHub
 https://github.com/GCX/acf-taxonomy-field
 
-### Bugs or Suggestions
+### Bugs, Questions or Suggestions
 https://github.com/GCX/acf-taxonomy-field/issues
 
 Installation
@@ -47,4 +47,3 @@ Todo
 ----
 * Add ability to add new terms to a taxonomy
 * Add more term selection methods (checkboxes, token input).
-* Improve the `get_value()` api call to return html using `the_terms()` WordPress method.
