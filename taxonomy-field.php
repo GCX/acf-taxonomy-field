@@ -334,8 +334,31 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 */
 	public function get_value_for_api( $post_id, $field ) {
 		$this->set_field_defaults( $field );
+		//If terms are set on the post, we can let WordPress create the list
+		if( $field[ 'set_post_terms' ] ) {
+			return get_the_term_list( $post_id, $field[ 'taxonomy' ] );
+		}
+		
+		//Otherwise, loop through the terms
 		$value = parent::get_value_for_api($post_id, $field);
-		return get_the_term_list( $post_id, $field[ 'taxonomy' ] );
+		if( empty( $value ) )
+			return false;
+		
+		$term_links = array();
+		foreach( $value as $term_id ) {
+			$term_id = intval( $term_id );
+			$term = get_term( $term_id );
+			$link = get_term_link( $term, $taxonomy );
+			if( !is_wp_error( $link ) )
+				$term_links[] = '<a href="' . $link . '" rel="tag">' . $term->name . '</a>';
+		}
+		if( empty( $term_links ) )
+			return false;
+		
+		//Allow plugins to modify
+		$term_links = apply_filters( "term_links-{$field[ 'taxonomy' ]}", $term_links );
+		
+		return join( '', $term_links );
 	}
 }
 
