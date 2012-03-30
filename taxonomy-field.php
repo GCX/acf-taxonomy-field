@@ -106,7 +106,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$this->base_uri_abs = get_site_url( null, $this->base_uri_rel );
 		
 		$this->name  = 'taxonomy-field';
-		$this->title = __( 'Taxonomy', $this->l10n_doamin );
+		$this->title = __( 'Taxonomy', $this->l10n_domain );
 		
 		add_action( 'admin_print_scripts', array( &$this, 'admin_print_scripts' ), 12, 0 );
 		add_action( 'admin_print_styles',  array( &$this, 'admin_print_styles' ),  12, 0 );
