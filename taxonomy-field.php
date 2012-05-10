@@ -347,8 +347,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$term_links = array();
 		foreach( $value as $term_id ) {
 			$term_id = intval( $term_id );
-			$term = get_term( $term_id );
-			$link = get_term_link( $term, $taxonomy );
+			$term = get_term( $term_id, $field[ 'taxonomy' ] );
+			$link = get_term_link( $term, $field[ 'taxonomy' ] );
 			if( !is_wp_error( $link ) )
 				$term_links[] = '<a href="' . $link . '" rel="tag">' . $term->name . '</a>';
 		}
