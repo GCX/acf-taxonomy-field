@@ -91,11 +91,12 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$this->l10n_domain = ACF_Taxonomy_Field_Helper::L10N_DOMAIN;
 		
 		//Base directory of this field
-		$this->base_dir = rtrim( dirname( realpath( __FILE__ ) ), '/' );
+		$this->base_dir = rtrim( dirname( realpath( __FILE__ ) ), DIRECTORY_SEPARATOR );
 		
 		//Build the base relative uri by searching backwards until we encounter the wordpress ABSPATH
-		$root = array_pop( explode( '/', rtrim( ABSPATH, '/' ) ) );
-		$path_parts = explode( '/', $this->base_dir );
+		//This may not work if the $base_dir contains a symlink outside of the WordPress ABSPATH
+		$root = array_pop( explode( DIRECTORY_SEPARATOR, rtrim( realpath( ABSPATH ), DIRECTORY_SEPARATOR ) ) );
+		$path_parts = explode( DIRECTORY_SEPARATOR, $this->base_dir );
 		$parts = array();
 		while( $part = array_pop( $path_parts ) ) {
 			if( $part == $root )
