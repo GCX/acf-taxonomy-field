@@ -1,3 +1,4 @@
 *.log
 .svn
+/nbproject/
 /nbproject/private/
