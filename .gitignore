@@ -1,5 +1,7 @@
 *.log
 .svn
-
+nbproject/
+.project
+.settings
 /nbproject/
 /nbproject/private/
