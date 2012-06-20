@@ -156,12 +156,12 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @return array
 	 */
 	private function set_field_defaults( &$field ) {
-		$field[ 'taxonomy' ]        = ( array_key_exists( 'taxonomy', $field ) && isset( $field[ 'taxonomy' ] ) ) ? $field[ 'taxonomy' ] : 'category';
-		$field[ 'input_type' ]      = ( array_key_exists( 'input_type', $field ) && isset( $field[ 'input_type' ] ) ) ? $field[ 'input_type' ] : 'select';
-		$field[ 'input_size' ]      = ( array_key_exists( 'input_size', $field ) && isset( $field[ 'input_size' ] ) ) ? (int) $field[ 'input_size' ] : 5;
-//		$field[ 'allow_new_terms' ] = ( array_key_exists( 'allow_new_terms', $field ) && isset( $field[ 'allow_new_terms' ] ) ) ? (int) $field[ 'allow_new_terms' ] : 0; //false
-		$field[ 'set_post_terms' ]  = ( array_key_exists( 'set_post_terms', $field ) && isset( $field[ 'set_post_terms' ] ) ) ? (int) $field[ 'set_post_terms' ] : 1; //true
-		$field['return_value_type'] = isset($field['return_value_type']) ? $field['return_value_type'] : 'link';
+		$field[ 'taxonomy' ]          = ( array_key_exists( 'taxonomy', $field ) && isset( $field[ 'taxonomy' ] ) ) ? $field[ 'taxonomy' ] : 'category';
+		$field[ 'input_type' ]        = ( array_key_exists( 'input_type', $field ) && isset( $field[ 'input_type' ] ) ) ? $field[ 'input_type' ] : 'select';
+		$field[ 'input_size' ]        = ( array_key_exists( 'input_size', $field ) && isset( $field[ 'input_size' ] ) ) ? (int) $field[ 'input_size' ] : 5;
+//		$field[ 'allow_new_terms' ]   = ( array_key_exists( 'allow_new_terms', $field ) && isset( $field[ 'allow_new_terms' ] ) ) ? (int) $field[ 'allow_new_terms' ] : 0; //false
+		$field[ 'set_post_terms' ]    = ( array_key_exists( 'set_post_terms', $field ) && isset( $field[ 'set_post_terms' ] ) ) ? (int) $field[ 'set_post_terms' ] : 1; //true
+		$field[ 'return_value_type' ] = isset( $field[ 'return_value_type' ] ) ? $field[ 'return_value_type' ] : 'link';
 		return $field;
 	}
 	
@@ -264,16 +264,16 @@ class ACF_Taxonomy_Field extends acf_Field {
 				<td>
 					<?php 
 					$this->parent->create_field(array(
-						'type'	=>	'radio',
-						'name'	=>	'fields['.$key.'][return_value_type]',
-						'value'	=>	$field['return_value_type'],
-						'layout'	=>	'horizontal',
+						'type'    => 'radio',
+						'name'    => 'fields['.$key.'][return_value_type]',
+						'value'   => $field[ 'return_value_type' ],
+						'layout'  => 'horizontal',
 						'choices' => array(
-							'link'		=>	__("Links",'acf'),
-							'object'	=>	__("Objects",'acf'),
-							'id'		=>	__("Term IDs",'acf')
+							'link'   => __( 'Links', $this->l10n_domain),
+							'object' => __( 'Objects', $this->l10n_domain ),
+							'id'     => __( 'Term IDs', $this->l10n_domain ),
 						)
-					));
+					) );
 					?>
 				</td>
 			</tr>
