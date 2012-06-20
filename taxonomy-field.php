@@ -161,6 +161,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$field[ 'input_size' ]      = ( array_key_exists( 'input_size', $field ) && isset( $field[ 'input_size' ] ) ) ? (int) $field[ 'input_size' ] : 5;
 //		$field[ 'allow_new_terms' ] = ( array_key_exists( 'allow_new_terms', $field ) && isset( $field[ 'allow_new_terms' ] ) ) ? (int) $field[ 'allow_new_terms' ] : 0; //false
 		$field[ 'set_post_terms' ]  = ( array_key_exists( 'set_post_terms', $field ) && isset( $field[ 'set_post_terms' ] ) ) ? (int) $field[ 'set_post_terms' ] : 1; //true
+		$field['return_value_type'] = isset($field['return_value_type']) ? $field['return_value_type'] : 'link';
 		return $field;
 	}
 	
@@ -255,6 +256,27 @@ class ACF_Taxonomy_Field extends acf_Field {
 					?>
 				</td>
 			</tr>
+			<tr class="field_option field_option_<?php echo $this->name; ?>">
+				<td class="label">
+					<label><?php _e("Return Value",'acf'); ?></label>
+					<p class="description"><?php _e( 'Choose the field value type returned by API calls.', $this->l10n_domain ); ?></p>
+				</td>
+				<td>
+					<?php 
+					$this->parent->create_field(array(
+						'type'	=>	'radio',
+						'name'	=>	'fields['.$key.'][return_value_type]',
+						'value'	=>	$field['return_value_type'],
+						'layout'	=>	'horizontal',
+						'choices' => array(
+							'link'		=>	__("Links",'acf'),
+							'object'	=>	__("Objects",'acf'),
+							'id'		=>	__("Term IDs",'acf')
+						)
+					));
+					?>
+				</td>
+			</tr>
 <!--
 			<tr class="field_option field_option_<?php echo $this->name; ?> taxonomy_add_terms">
 				<td class="label">
@@ -335,9 +357,24 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 */
 	public function get_value_for_api( $post_id, $field ) {
 		$this->set_field_defaults( $field );
+		
+		$terms = array();
+		
 		//If terms are set on the post, we can let WordPress create the list
 		if( $field[ 'set_post_terms' ] ) {
-			return get_the_term_list( $post_id, $field[ 'taxonomy' ] );
+			switch ( $field[ 'return_value_type' ] ) {
+				case 'id':
+					$the_terms = get_the_terms( $post_id, $field[ 'taxonomy' ] );
+					foreach ($the_terms as $term) {
+						$terms[] = $term->term_id;
+					}
+					return $terms;
+				case 'object':
+					return get_the_terms( $post_id, $field[ 'taxonomy' ] );
+				case 'link':
+				default:
+					return get_the_term_list( $post_id, $field[ 'taxonomy' ] );
+			}
 		}
 		
 		//Otherwise, loop through the terms
@@ -345,21 +382,37 @@ class ACF_Taxonomy_Field extends acf_Field {
 		if( empty( $value ) )
 			return false;
 		
-		$term_links = array();
 		foreach( $value as $term_id ) {
 			$term_id = intval( $term_id );
 			$term = get_term( $term_id, $field[ 'taxonomy' ] );
 			$link = get_term_link( $term, $field[ 'taxonomy' ] );
 			if( !is_wp_error( $link ) )
-				$term_links[] = '<a href="' . $link . '" rel="tag">' . $term->name . '</a>';
+				switch ( $field[ 'return_value_type' ] ) {
+					case 'id':
+						$terms[] = $term_id;
+					case 'object':
+						$terms[] = $term;
+						break;
+					case 'link':
+					default:
+						$terms[] = '<a href="' . $link . '" rel="tag">' . $term->name . '</a>';
+						break;
+				}
+				
 		}
-		if( empty( $term_links ) )
+		if( empty( $terms ) )
 			return false;
 		
-		//Allow plugins to modify
-		$term_links = apply_filters( "term_links-{$field[ 'taxonomy' ]}", $term_links );
-		
-		return join( '', $term_links );
+		switch ( $field[ 'return_value_type' ] ) {
+			case 'id':
+			case 'object':
+				return $terms;
+			case 'link':
+			default:
+				//Allow plugins to modify
+				$terms = apply_filters( "term_links-{$field[ 'taxonomy' ]}", $terms );
+				return join( '', $terms );
+		}
 	}
 }
 
