@@ -258,7 +258,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 			</tr>
 			<tr class="field_option field_option_<?php echo $this->name; ?>">
 				<td class="label">
-					<label><?php _e("Return Value",'acf'); ?></label>
+					<label><?php _e( 'Return Value', $this->l10n_domain ); ?></label>
 					<p class="description"><?php _e( 'Choose the field value type returned by API calls.', $this->l10n_domain ); ?></p>
 				</td>
 				<td>
