@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/acf-taxonomy-field\n"
-"POT-Creation-Date: 2012-02-08 20:53:11+00:00\n"
+"POT-Creation-Date: 2012-06-20 15:09:59+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,40 +12,60 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: taxonomy-field.php:109 taxonomy-field.php:207
+#: taxonomy-field.php:110 taxonomy-field.php:209
 msgid "Taxonomy"
 msgstr ""
 
-#: taxonomy-field.php:208
+#: taxonomy-field.php:210
 msgid "Select the taxonomy to display."
 msgstr ""
 
-#: taxonomy-field.php:223
+#: taxonomy-field.php:225
 msgid "Input Method"
 msgstr ""
 
-#: taxonomy-field.php:244
+#: taxonomy-field.php:246
 msgid "Set Post Terms"
 msgstr ""
 
-#: taxonomy-field.php:245
+#: taxonomy-field.php:247
 msgid ""
 "Add the selected term(s) to the post. The current post must support the "
 "selected taxonomy for this to work."
 msgstr ""
 
-#: taxonomy-field.php:260
+#: taxonomy-field.php:261
+msgid "Return Value"
+msgstr ""
+
+#: taxonomy-field.php:262
+msgid "Choose the field value type returned by API calls."
+msgstr ""
+
+#: taxonomy-field.php:272
+msgid "Links"
+msgstr ""
+
+#: taxonomy-field.php:273
+msgid "Objects"
+msgstr ""
+
+#: taxonomy-field.php:274
+msgid "Term IDs"
+msgstr ""
+
+#: taxonomy-field.php:283
 msgid "Add New Terms"
 msgstr ""
 
-#: taxonomy-field.php:261
+#: taxonomy-field.php:284
 msgid "Add any new terms to the selected taxonomy."
 msgstr ""
 
-#: taxonomy-field.php:276
+#: taxonomy-field.php:299
 msgid "Multi-Select Size"
 msgstr ""
 
-#: taxonomy-field.php:277
+#: taxonomy-field.php:300
 msgid "The number of terms to show at once in a multi-select."
 msgstr ""
