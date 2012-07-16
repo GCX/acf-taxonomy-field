@@ -179,7 +179,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 		?>
 			<select name="<?php echo $field[ 'name' ]; ?>[]" id="<?php echo $field[ 'name' ]; ?>" class="<?php echo $field[ 'class' ]; ?>" <?php echo ( $field[ 'input_type' ] == 'multiselect' ) ? 'multiple="multiple" size="' . $field[ 'input_size' ] . '"' : ''; ?>>
 				<?php foreach( $terms as $term ) : ?>
-					<option value="<?php echo $term->term_id; ?>" <?php selected( in_array( (int) $term->term_taxonomy_id, $value ) ); ?>><?php echo $term->name; ?></option>
+					<option value="<?php echo $term->term_id; ?>" <?php selected( in_array( (int) $term->term_id, $value ) ); ?>><?php echo $term->name; ?></option>
 				<?php endforeach; ?>
 			</select>
 		<?php
