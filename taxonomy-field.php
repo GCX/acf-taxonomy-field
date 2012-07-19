@@ -256,9 +256,9 @@ class ACF_Taxonomy_Field extends acf_Field {
 							'value'   => $field[ 'input_type' ],
 							'class'   => 'taxonomy_input_type',
 							'choices' => array(
-								'select'      => 'Select',
-								'multiselect' => 'Multi-Select',
-								'hierarchical' => 'Hierarchical Checkboxes'
+								'select'      => __( 'Select', $this->l10n_domain ),
+								'multiselect' => __( 'Multi-Select', $this->l10n_domain ),
+								'hierarchical' => __( 'Hierarchical Checkboxes', $this->l10n_domain ),
 								//'token'       => 'Input Tokenizer',
 							),
 						) );
