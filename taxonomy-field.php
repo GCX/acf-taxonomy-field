@@ -174,7 +174,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$this->set_field_defaults( $field );
 		
 		$terms = get_terms( $field['taxonomy'], array( 'hide_empty' => false ) );
-		$value = $field[ 'value' ];
+		$value = is_array( $field[ 'value' ] ) ? $field[ 'value' ] : array();
 
 		if( in_array( $field[ 'input_type' ], array( 'select', 'multiselect' ) ) ) :
 		?>
