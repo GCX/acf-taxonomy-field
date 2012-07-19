@@ -180,9 +180,32 @@ class ACF_Taxonomy_Field extends acf_Field {
 		?>
 			<select name="<?php echo $field[ 'name' ]; ?>[]" id="<?php echo $field[ 'name' ]; ?>" class="<?php echo $field[ 'class' ]; ?>" <?php echo ( $field[ 'input_type' ] == 'multiselect' ) ? 'multiple="multiple" size="' . $field[ 'input_size' ] . '"' : ''; ?>>
 				<?php foreach( $terms as $term ) : ?>
-					<option value="<?php echo $term->term_id; ?>" <?php selected( in_array( (int) $term->term_taxonomy_id, $value ) ); ?>><?php echo $term->name; ?></option>
+					<option value="<?php echo $term->term_id; ?>" <?php selected( in_array( (int) $term->term_id, $value ) ); ?>><?php echo $term->name; ?></option>
 				<?php endforeach; ?>
 			</select>
+		<?php
+		elseif ( in_array( $field[ 'input_type'], array( 'hierarchical' ) ) ):
+		$id = $field['name'] . '-' . $field['taxonomy'];
+		?>
+			<div id="taxonomy-<?php echo $id; ?>" class="categorydiv">
+				<div id="<?php echo $id; ?>-all" class="tabs-panel">
+					<?php
+					$name = ( $field['taxonomy'] == 'category' ) ? 'post_category' : $field['name'];
+					echo "<input type='hidden' name='{$name}' value='' />";
+					?>
+					<ul id="<?php echo $id; ?>checklist" class="list:<?php echo $field['taxonomy']; ?> categorychecklist form-no-clear">
+						<?php 
+							wp_terms_checklist( 0, array(
+								'name'          => $name,
+								'checked_ontop' => false,
+								'selected_cats' => $value,
+								'taxonomy'      => $field['taxonomy'],
+								'walker'        => new ACF_Walker_Taxonomy_Field_Checklist($field)
+							) );
+						?>
+					</ul>
+				</div>
+			</div>
 		<?php
 		endif;
 	}
@@ -235,6 +258,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 							'choices' => array(
 								'select'      => 'Select',
 								'multiselect' => 'Multi-Select',
+								'hierarchical' => 'Hierarchical Checkboxes'
 								//'token'       => 'Input Tokenizer',
 							),
 						) );
@@ -417,6 +441,48 @@ class ACF_Taxonomy_Field extends acf_Field {
 }
 
 endif; //class_exists 'ACF_Taxonomy_Field'
+
+if( !class_exists( 'ACF_Walker_Taxonomy_Field_Checklist' ) ) :
+
+class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
+	var $tree_type = 'category';
+	var $db_fields = array ( 'parent' => 'parent', 'id' => 'term_id' );
+
+	function __construct( $field ) {
+		$this->field = $field;
+	}
+
+	function start_lvl( &$output, $depth = 0, $args = array() ) {
+		$indent = str_repeat("\t", $depth);
+		$output .= "$indent<ul class='children'>\n";
+	}
+
+	function end_lvl( &$output, $depth = 0, $args = array() ) {
+		$indent = str_repeat("\t", $depth);
+		$output .= "$indent</ul>\n";
+	}
+
+	function start_el( &$output, $category, $depth, $args, $id = 0 ) {
+		extract($args);
+
+		if ( empty( $taxonomy ) )
+			$taxonomy = 'category';
+
+		if ( $taxonomy == 'category' )
+			$name = 'post_category';
+		else
+			$name = $this->field['name'];
+
+		$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
+		$output .= "\n<li id='{$taxonomy}-{$category->term_id}-{$name}'$class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '-' . $name . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
+	}
+
+	function end_el( &$output, $category, $depth = 0, $args = array() ) {
+		$output .= "</li>\n";
+	}
+}
+
+endif; //class_exists 'ACF_Walker_Taxonomy_Field_Checklist'
 
 if( !class_exists( 'ACF_Taxonomy_Field_Helper' ) ) :
 
