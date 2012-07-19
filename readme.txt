@@ -2,8 +2,8 @@
 Contributors: Omicron7
 Tags: acf, acf add-on, taxonomy, custom field, taxonomy field
 Requires at least: 3.0
-Tested up to: 3.3.2
-Stable tag: 1.1.1
+Tested up to: 3.4.1
+Stable tag: 1.2
 
 Adds a Taxonomy Field to Advanced Custom Fields. Select one or more taxonomy terms and assign them to the post.
 
@@ -13,10 +13,10 @@ This is an add-on for the [Advanced Custom Fields](http://wordpress.org/extend/p
 WordPress plugin and will not provide any functionality to WordPress unless Advanced Custom Fields is installed
 and activated.
 
-The taxonomy field provides a dropdown (select or multi-select) of taxonomy terms (categories, tags, custom taxonomies...)
+The taxonomy field provides a select, multi-select or checkboxes of taxonomy terms (categories, tags, custom taxonomies...)
 and the ability to map the selected terms to the post. The post type must support the taxonomy for the mapping to work.
-The taxonomy field currently does not provide the ability to add new terms to a taxonomy. The `get_value()` api returns
-a list of taxonomy links similar to WordPress `get_the_term_list()`.
+The taxonomy field currently does not provide the ability to add new terms to a taxonomy. The return type of the `get_value()`
+api can be changed in the field settings.
 
 = Source Repository on GitHub =
 https://github.com/GCX/acf-taxonomy-field
@@ -55,6 +55,14 @@ activated. This is not a standalone plugin for WordPress, it only adds additiona
 3. Adding a term to a page.
 
 == Changelog ==
+
+= 1.2 =
+* Fixed issue Taxonomy Field not working in a Repeater Field. Props markSal
+* Fixed a bug which caused wrong options to be shown in the metabox. Props FunkyM
+* Fixed an additional issue with URL generation on Windows hosts.
+* Added hierarchical checkboxes input type similar to builting WordPress taxonomy chooser. Props FunkyM
+* Added option to choose link, object or ID as return value for field API calls. Props FunkyM
+* Updated localizations
 
 = 1.1.1 =
 * Fixed issue with path and URI generation on Windows hosts.
