@@ -184,15 +184,20 @@ class ACF_Taxonomy_Field extends acf_Field {
 	public function create_field( $field ) {
 		$this->set_field_defaults( $field );
 		
-		$terms = get_terms( $field['taxonomy'], array( 'hide_empty' => false ) );
-		$value = is_array( $field[ 'value' ] ) ? $field[ 'value' ] : array();
+		$field[ 'value' ] = is_array( $field[ 'value' ] ) ? $field[ 'value' ] : array();
 
 		if( in_array( $field[ 'input_type' ], array( 'select', 'multiselect' ) ) ) :
 		?>
 			<select name="<?php echo $field[ 'name' ]; ?>[]" id="<?php echo $field[ 'name' ]; ?>" class="<?php echo $field[ 'class' ]; ?>" <?php echo ( $field[ 'input_type' ] == 'multiselect' ) ? 'multiple="multiple" size="' . $field[ 'input_size' ] . '"' : ''; ?>>
-				<?php foreach( $terms as $term ) : ?>
-					<option value="<?php echo $term->term_id; ?>" <?php selected( in_array( (int) $term->term_id, $value ) ); ?>><?php echo $term->name; ?></option>
-				<?php endforeach; ?>
+				<?php
+					wp_list_categories( array(
+						'taxonomy'     => $field[ 'taxonomy' ],
+						'hide_empty'   => false,
+						'hierarchical' => is_taxonomy_hierarchical( $field[ 'taxonomy' ] ),
+						'style'        => 'none',
+						'walker'       => new ACF_Walker_Taxonomy_Field_List( $field ),
+					) );
+				?>
 			</select>
 		<?php
 		elseif ( in_array( $field[ 'input_type'], array( 'hierarchical' ) ) ):
@@ -209,7 +214,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 							wp_terms_checklist( 0, array(
 								'name'          => $name,
 								'checked_ontop' => false,
-								'selected_cats' => $value,
+								'selected_cats' => $field[ 'value' ],
 								'taxonomy'      => $field['taxonomy'],
 								'walker'        => new ACF_Walker_Taxonomy_Field_Checklist($field)
 							) );
@@ -500,6 +505,25 @@ class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 }
 
 endif; //class_exists 'ACF_Walker_Taxonomy_Field_Checklist'
+
+
+if( !class_exists( 'ACF_Walker_Taxonomy_Field_List' ) ) :
+
+class ACF_Walker_Taxonomy_Field_List extends Walker {
+	var $tree_type = 'category';
+	var $db_fields = array ( 'parent' => 'parent', 'id' => 'term_id' );
+	private $field;
+
+	function __construct( $field ) {
+		$this->field = $field;
+	}
+	
+	function start_el( &$output, $object, $depth, $args, $current_object_id = 0 ) {
+		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ 'value' ] ), true, false ) . '>' . str_repeat( '&nbsp;', $depth * 3 ) . esc_attr( $object->name ) . '</option>';
+	}
+}
+endif; //class_exists 'ACF_Walker_Taxonomy_Field_List'
+
 
 if( !class_exists( 'ACF_Taxonomy_Field_Helper' ) ) :
 
