@@ -352,7 +352,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 				else
 					$terms[] = strval( $item );
 			}
-			$value = wp_set_object_terms( $post_id, $terms, $field[ 'taxonomy' ], false );
+			wp_set_object_terms( $post_id, $terms, $field[ 'taxonomy' ], false );
 		}
 		
 		parent::update_value( $post_id, $field, $value );
