@@ -51,6 +51,11 @@ if( !class_exists( 'ACF_Taxonomy_Field' ) && class_exists( 'acf_Field' ) ) :
  * @version 1.2
  */
 class ACF_Taxonomy_Field extends acf_Field {
+	
+	const SET_TERMS_NOT_SET  = 'not_set';
+	const SET_TERMS_APPEND   = 'append';
+	const SET_TERMS_OVERRIDE = 'override';
+	
 	/**
 	 * Base directory
 	 * @var string
@@ -160,7 +165,13 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$field[ 'input_type' ]        = ( array_key_exists( 'input_type', $field ) && isset( $field[ 'input_type' ] ) ) ? $field[ 'input_type' ] : 'select';
 		$field[ 'input_size' ]        = ( array_key_exists( 'input_size', $field ) && isset( $field[ 'input_size' ] ) ) ? (int) $field[ 'input_size' ] : 5;
 //		$field[ 'allow_new_terms' ]   = ( array_key_exists( 'allow_new_terms', $field ) && isset( $field[ 'allow_new_terms' ] ) ) ? (int) $field[ 'allow_new_terms' ] : 0; //false
-		$field[ 'set_post_terms' ]    = ( array_key_exists( 'set_post_terms', $field ) && isset( $field[ 'set_post_terms' ] ) ) ? (int) $field[ 'set_post_terms' ] : 1; //true
+
+		$field[ 'set_post_terms' ]    = ( array_key_exists( 'set_post_terms', $field ) && isset( $field[ 'set_post_terms' ] ) ) ? $field[ 'set_post_terms' ] : self::SET_TERMS_NOT_SET;
+		if( $field[ 'set_post_terms' ] == '1' )
+			$field[ 'set_post_terms' ] = self::SET_TERMS_OVERRIDE;
+		elseif( $field[ 'set_post_terms' ] == '0' )
+			$field[ 'set_post_terms' ] = self::SET_TERMS_NOT_SET;
+
 		$field[ 'return_value_type' ] = isset( $field[ 'return_value_type' ] ) ? $field[ 'return_value_type' ] : 'link';
 		return $field;
 	}
@@ -273,9 +284,15 @@ class ACF_Taxonomy_Field extends acf_Field {
 				<td>
 					<?php 
 						$this->parent->create_field( array(
-							'type'  => 'true_false',
-							'name'  => "fields[{$key}][set_post_terms]",
-							'value' => $field[ 'set_post_terms' ],
+							'type'    => 'radio',
+							'name'    => 'fields['.$key.'][set_post_terms]',
+							'value'   => $field[ 'set_post_terms' ],
+							'layout'  => 'horizontal',
+							'choices' => array(
+								self::SET_TERMS_NOT_SET  => __( 'Not Set', $this->l10n_domain),
+								self::SET_TERMS_APPEND   => __( 'Append Terms', $this->l10n_domain ),
+								self::SET_TERMS_OVERRIDE => __( 'Override Terms', $this->l10n_domain ),
+							)
 						) );
 					?>
 				</td>
@@ -344,7 +361,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 	public function update_value( $post_id, $field, $value ) {
 		$this->set_field_defaults( $field );
 		
-		if( $field[ 'set_post_terms' ] ) {
+		if( in_array( $field[ 'set_post_terms' ], array( self::SET_TERMS_APPEND, self::SET_TERMS_OVERRIDE ) ) ) {
 			$terms = array();
 			foreach( (array) $value as $item ) {
 				if( intval( $item ) > 0 )
@@ -352,7 +369,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 				else
 					$terms[] = strval( $item );
 			}
-			wp_set_object_terms( $post_id, $terms, $field[ 'taxonomy' ], false );
+			wp_set_object_terms( $post_id, $terms, $field[ 'taxonomy' ], $field[ 'set_post_terms' ] == self::SET_TERMS_APPEND );
 		}
 		
 		parent::update_value( $post_id, $field, $value );
@@ -385,7 +402,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$terms = array();
 		
 		//If terms are set on the post, we can let WordPress create the list
-		if( $field[ 'set_post_terms' ] ) {
+		if( in_array( $field[ 'set_post_terms' ], array( self::SET_TERMS_APPEND, self::SET_TERMS_OVERRIDE ) ) ) {
 			switch ( $field[ 'return_value_type' ] ) {
 				case 'id':
 					$the_terms = get_the_terms( $post_id, $field[ 'taxonomy' ] );
