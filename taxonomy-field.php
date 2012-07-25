@@ -228,7 +228,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 		if( $field[ self::FIELD_SET_TERMS ] == '1' ) $field[ self::FIELD_SET_TERMS ] = self::SET_TERMS_OVERRIDE;
 		elseif( $field[ self::FIELD_SET_TERMS ] == '0' ) $field[ self::FIELD_SET_TERMS ] = self::SET_TERMS_NOT_SET;
 
-		$field[ self::FIELD_RETURN_TYPE ] = isset( $field[ self::FIELD_RETURN_TYPE ] ) ? $field[ self::FIELD_RETURN_TYPE ] : 'link';
+		$field[ self::FIELD_RETURN_TYPE ] = isset( $field[ self::FIELD_RETURN_TYPE ] ) ? $field[ self::FIELD_RETURN_TYPE ] : self::RETURN_TYPE_LINK;
 		return $field;
 	}
 	
@@ -370,9 +370,9 @@ class ACF_Taxonomy_Field extends acf_Field {
 						'value'   => $field[ self::FIELD_RETURN_TYPE ],
 						'layout'  => 'horizontal',
 						'choices' => array(
-							'link'   => __( 'Links', $this->l10n_domain),
-							'object' => __( 'Objects', $this->l10n_domain ),
-							'id'     => __( 'Term IDs', $this->l10n_domain ),
+							self::RETURN_TYPE_LINK   => __( 'Links', $this->l10n_domain),
+							self::RETURN_TYPE_OBJECT => __( 'Objects', $this->l10n_domain ),
+							self::RETURN_TYPE_ID     => __( 'Term IDs', $this->l10n_domain ),
 						)
 					) );
 					?>
