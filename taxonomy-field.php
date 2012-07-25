@@ -113,45 +113,6 @@ class ACF_Taxonomy_Field extends acf_Field {
 		
 		$this->name  = 'taxonomy-field';
 		$this->title = __( 'Taxonomy', $this->l10n_domain );
-		
-		add_action( 'admin_print_scripts', array( &$this, 'admin_print_scripts' ), 12, 0 );
-		add_action( 'admin_print_styles',  array( &$this, 'admin_print_styles' ),  12, 0 );
-	}
-	
-	/**
-	 * Registers and enqueues necessary CSS
-	 * 
-	 * This method is called by ACF when rendering a post add or edit screen.
-	 * We also call this method on the Acf Field Options screen as well in order
-	 * to style our Field options
-	 * 
-	 * @see acf_Field::admin_print_styles()
-	 */
-	public function admin_print_styles() {
-		global $pagenow;
-//		wp_register_style( 'acf-taxonomy-field', $this->base_uri_abs . '/taxonomy-field.css' );
-		
-		if( in_array( $pagenow, array( 'post.php', 'post-new.php' ) ) ) {
-//			wp_enqueue_style( 'acf-taxonomy-field' );
-		}
-	}
-	
-	/**
-	 * Registers and enqueues necessary JavaScript
-	 * 
-	 * This method is called by ACF when rendering a post add or edit screen.
-	 * We also call this method on the Acf Field Options screen as well in order
-	 * to add the necessary JavaScript for taxonomy selection.
-	 * 
-	 * @see acf_Field::admin_print_scripts()
-	 */
-	public function admin_print_scripts() {
-		global $pagenow;
-//		wp_register_script( 'acf-taxonomy-field', $this->base_uri_abs . '/taxonomy-field.js', array( 'jquery' ) );
-		
-		if( in_array( $pagenow, array( 'post.php', 'post-new.php' ) ) ) {
-//			wp_enqueue_script( 'acf-taxonomy-field' );
-		}
 	}
 	
 	/**
@@ -164,7 +125,6 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$field[ 'taxonomy' ]          = ( array_key_exists( 'taxonomy', $field ) && isset( $field[ 'taxonomy' ] ) ) ? $field[ 'taxonomy' ] : 'category';
 		$field[ 'input_type' ]        = ( array_key_exists( 'input_type', $field ) && isset( $field[ 'input_type' ] ) ) ? $field[ 'input_type' ] : 'select';
 		$field[ 'input_size' ]        = ( array_key_exists( 'input_size', $field ) && isset( $field[ 'input_size' ] ) ) ? (int) $field[ 'input_size' ] : 5;
-//		$field[ 'allow_new_terms' ]   = ( array_key_exists( 'allow_new_terms', $field ) && isset( $field[ 'allow_new_terms' ] ) ) ? (int) $field[ 'allow_new_terms' ] : 0; //false
 
 		$field[ 'set_post_terms' ]    = ( array_key_exists( 'set_post_terms', $field ) && isset( $field[ 'set_post_terms' ] ) ) ? $field[ 'set_post_terms' ] : self::SET_TERMS_NOT_SET;
 		if( $field[ 'set_post_terms' ] == '1' )
@@ -275,7 +235,6 @@ class ACF_Taxonomy_Field extends acf_Field {
 								'select'      => __( 'Select', $this->l10n_domain ),
 								'multiselect' => __( 'Multi-Select', $this->l10n_domain ),
 								'hierarchical' => __( 'Hierarchical Checkboxes', $this->l10n_domain ),
-								//'token'       => 'Input Tokenizer',
 							),
 						) );
 					?>
@@ -323,23 +282,6 @@ class ACF_Taxonomy_Field extends acf_Field {
 					?>
 				</td>
 			</tr>
-<!--
-			<tr class="field_option field_option_<?php echo $this->name; ?> taxonomy_add_terms">
-				<td class="label">
-					<label><?php _e( 'Add New Terms' , $this->l10n_domain ); ?></label>
-					<p class="description"><?php _e( 'Add any new terms to the selected taxonomy.', $this->l10n_domain ); ?></p>
-				</td>
-				<td>
-					<?php 
-						$this->parent->create_field( array(
-							'type'  => 'true_false',
-							'name'  => "fields[{$key}][allow_new_terms]",
-							'value' => $field[ 'allow_new_terms' ],
-						) );
-					?>
-				</td>
-			</tr>
--->
 			<tr class="field_option field_option_<?php echo $this->name; ?> taxonomy_input_size">
 				<td class="label">
 					<label><?php _e( 'Multi-Select Size' , $this->l10n_domain ); ?></label>
