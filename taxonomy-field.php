@@ -51,23 +51,121 @@ if( !class_exists( 'ACF_Taxonomy_Field' ) && class_exists( 'acf_Field' ) ) :
  * @version 1.2
  */
 class ACF_Taxonomy_Field extends acf_Field {
-	
-	const SET_TERMS_NOT_SET  = 'not_set';
-	const SET_TERMS_APPEND   = 'append';
+
+	/**
+	 * Field name
+	 * @var string
+	 */
+	const FIELD_NAME = 'name';
+
+	/**
+	 * Field class
+	 * @var string
+	 */
+	const FIELD_CLASS = 'class';
+
+	/**
+	 * Field value
+	 * @var string
+	 */
+	const FIELD_VALUE = 'value';
+
+	/**
+	 * Field taxonomy type
+	 * @var string
+	 */
+	const FIELD_TAXONOMY = 'taxonomy';
+
+	/**
+	 * Field input type
+	 * @var string
+	 */
+	const FIELD_INPUT_TYPE = 'input_type';
+
+	/**
+	 * Field input size
+	 * @var string
+	 */
+	const FIELD_INPUT_SIZE = 'input_size';
+
+	/**
+	 * Field set post terms
+	 * @var string
+	 */
+	const FIELD_SET_TERMS = 'set_post_terms';
+
+	/**
+	 * Field return value type
+	 * @var string
+	 */
+	const FIELD_RETURN_TYPE = 'return_value_type';
+
+	/**
+	 * Input Type select
+	 * @var string
+	 */
+	const INPUT_TYPE_SELECT = 'select';
+
+	/**
+	 * Input Type multiselect
+	 * @var string
+	 */
+	const INPUT_TYPE_MULTISELECT = 'multiselect';
+
+	/**
+	 * Input Type hierarchical checkboxes
+	 * @var string
+	 */
+	const INPUT_TYPE_CHECKBOX = 'hierarchical';
+
+	/**
+	 * Set Post Terms not set
+	 * @var string
+	 */
+	const SET_TERMS_NOT_SET = 'not_set';
+
+	/**
+	 * Set Post Terms append
+	 * @var string
+	 */
+	const SET_TERMS_APPEND = 'append';
+
+	/**
+	 * Set Post Terms override
+	 * @var string
+	 */
 	const SET_TERMS_OVERRIDE = 'override';
-	
+
+	/**
+	 * Return Value Type IDs
+	 * @var string
+	 */
+	const RETURN_TYPE_ID = 'id';
+
+	/**
+	 * Return Value Type objects
+	 * @var string
+	 */
+	const RETURN_TYPE_OBJECT = 'object';
+
+	/**
+	 * Return Value Type links
+	 * @var string
+	 */
+	const RETURN_TYPE_LINK = 'link';
+
 	/**
 	 * Base directory
 	 * @var string
 	 */
 	private $base_dir;
-	
+
 	/**
 	 * Relative Uri from the WordPress ABSPATH constant
 	 * @var string
 	 */
 	private $base_uri_rel;
-	
+
 	/**
 	 * Absolute Uri
 	 * 
@@ -75,7 +173,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @var string
 	 */
 	private $base_uri_abs;
-	
+
 	/**
 	 * WordPress Localization Text Domain
 	 * 
@@ -83,7 +181,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @var string
 	 */
 	private $l10n_domain;
-	
+
 	/**
 	 * Class Constructor - Instantiates a new Taxonomy Field
 	 * @param Acf $parent Parent Acf class
@@ -122,17 +220,15 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @return array
 	 */
 	private function set_field_defaults( &$field ) {
-		$field[ 'taxonomy' ]          = ( array_key_exists( 'taxonomy', $field ) && isset( $field[ 'taxonomy' ] ) ) ? $field[ 'taxonomy' ] : 'category';
-		$field[ 'input_type' ]        = ( array_key_exists( 'input_type', $field ) && isset( $field[ 'input_type' ] ) ) ? $field[ 'input_type' ] : 'select';
-		$field[ 'input_size' ]        = ( array_key_exists( 'input_size', $field ) && isset( $field[ 'input_size' ] ) ) ? (int) $field[ 'input_size' ] : 5;
+		$field[ self::FIELD_TAXONOMY ]   = ( array_key_exists( self::FIELD_TAXONOMY, $field ) && isset( $field[ self::FIELD_TAXONOMY ] ) ) ? $field[ self::FIELD_TAXONOMY ] : 'category';
+		$field[ self::FIELD_INPUT_TYPE ] = ( array_key_exists( self::FIELD_INPUT_TYPE, $field ) && isset( $field[ self::FIELD_INPUT_TYPE ] ) ) ? $field[ self::FIELD_INPUT_TYPE ] : self::INPUT_TYPE_SELECT;
+		$field[ self::FIELD_INPUT_SIZE ] = ( array_key_exists( self::FIELD_INPUT_SIZE, $field ) && isset( $field[ self::FIELD_INPUT_SIZE ] ) ) ? (int) $field[ self::FIELD_INPUT_SIZE ] : 5;
 
-		$field[ 'set_post_terms' ]    = ( array_key_exists( 'set_post_terms', $field ) && isset( $field[ 'set_post_terms' ] ) ) ? $field[ 'set_post_terms' ] : self::SET_TERMS_NOT_SET;
-		if( $field[ 'set_post_terms' ] == '1' )
-			$field[ 'set_post_terms' ] = self::SET_TERMS_OVERRIDE;
-		elseif( $field[ 'set_post_terms' ] == '0' )
-			$field[ 'set_post_terms' ] = self::SET_TERMS_NOT_SET;
+		$field[ self::FIELD_SET_TERMS ]  = ( array_key_exists( self::FIELD_SET_TERMS, $field ) && isset( $field[ self::FIELD_SET_TERMS ] ) ) ? $field[ self::FIELD_SET_TERMS ] : self::SET_TERMS_NOT_SET;
+		if( $field[ self::FIELD_SET_TERMS ] == '1' ) $field[ self::FIELD_SET_TERMS ] = self::SET_TERMS_OVERRIDE;
+		elseif( $field[ self::FIELD_SET_TERMS ] == '0' ) $field[ self::FIELD_SET_TERMS ] = self::SET_TERMS_NOT_SET;
 
-		$field[ 'return_value_type' ] = isset( $field[ 'return_value_type' ] ) ? $field[ 'return_value_type' ] : 'link';
+		$field[ self::FIELD_RETURN_TYPE ] = isset( $field[ self::FIELD_RETURN_TYPE ] ) ? $field[ self::FIELD_RETURN_TYPE ] : 'link';
 		return $field;
 	}
 	
@@ -144,38 +240,38 @@ class ACF_Taxonomy_Field extends acf_Field {
 	public function create_field( $field ) {
 		$this->set_field_defaults( $field );
 		
-		$field[ 'value' ] = is_array( $field[ 'value' ] ) ? $field[ 'value' ] : array();
+		$field[ self::FIELD_VALUE ] = is_array( $field[ self::FIELD_VALUE ] ) ? $field[ self::FIELD_VALUE ] : array();
 
-		if( in_array( $field[ 'input_type' ], array( 'select', 'multiselect' ) ) ) :
+		if( in_array( $field[ self::FIELD_INPUT_TYPE ], array( self::INPUT_TYPE_SELECT, self::INPUT_TYPE_MULTISELECT ) ) ) :
 		?>
-			<select name="<?php echo $field[ 'name' ]; ?>[]" id="<?php echo $field[ 'name' ]; ?>" class="<?php echo $field[ 'class' ]; ?>" <?php echo ( $field[ 'input_type' ] == 'multiselect' ) ? 'multiple="multiple" size="' . $field[ 'input_size' ] . '"' : ''; ?>>
+			<select name="<?php echo $field[ self::FIELD_NAME ]; ?>[]" id="<?php echo $field[ self::FIELD_NAME ]; ?>" class="<?php echo $field[ self::FIELD_CLASS ]; ?>" <?php echo ( $field[ self::FIELD_INPUT_TYPE ] == self::INPUT_TYPE_MULTISELECT ) ? 'multiple="multiple" size="' . $field[ self::FIELD_INPUT_SIZE ] . '"' : ''; ?>>
 				<?php
 					wp_list_categories( array(
-						'taxonomy'     => $field[ 'taxonomy' ],
+						'taxonomy'     => $field[ self::FIELD_TAXONOMY ],
 						'hide_empty'   => false,
-						'hierarchical' => is_taxonomy_hierarchical( $field[ 'taxonomy' ] ),
+						'hierarchical' => is_taxonomy_hierarchical( $field[ self::FIELD_TAXONOMY ] ),
 						'style'        => 'none',
 						'walker'       => new ACF_Walker_Taxonomy_Field_List( $field ),
 					) );
 				?>
 			</select>
 		<?php
-		elseif ( in_array( $field[ 'input_type'], array( 'hierarchical' ) ) ):
-		$id = $field['name'] . '-' . $field['taxonomy'];
+		elseif ( in_array( $field[ self::FIELD_INPUT_TYPE ], array( self::INPUT_TYPE_CHECKBOX ) ) ):
+		$id = "{$field[ self::FIELD_NAME ]}-{$field[ self::FIELD_TAXONOMY ]}";
 		?>
 			<div id="taxonomy-<?php echo $id; ?>" class="categorydiv">
 				<div id="<?php echo $id; ?>-all" class="tabs-panel">
 					<?php
-					$name = ( $field['taxonomy'] == 'category' ) ? 'post_category' : $field['name'];
+					$name = ( $field[ self::FIELD_TAXONOMY ] == 'category' ) ? 'post_category' : $field[ self::FIELD_NAME ];
 					echo "<input type='hidden' name='{$name}' value='' />";
 					?>
-					<ul id="<?php echo $id; ?>checklist" class="list:<?php echo $field['taxonomy']; ?> categorychecklist form-no-clear">
+					<ul id="<?php echo $id; ?>checklist" class="list:<?php echo $field[ self::FIELD_TAXONOMY ]; ?> categorychecklist form-no-clear">
 						<?php 
 							wp_terms_checklist( 0, array(
 								'name'          => $name,
 								'checked_ontop' => false,
-								'selected_cats' => $field[ 'value' ],
-								'taxonomy'      => $field['taxonomy'],
+								'selected_cats' => $field[ self::FIELD_VALUE ],
+								'taxonomy'      => $field[ self::FIELD_TAXONOMY ],
 								'walker'        => new ACF_Walker_Taxonomy_Field_Checklist($field)
 							) );
 						?>
@@ -212,8 +308,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<?php 
 						$this->parent->create_field( array(
 							'type'    => 'select',
-							'name'    => "fields[{$key}][taxonomy]",
-							'value'   => $field[ 'taxonomy' ],
+							'name'    => "fields[{$key}][" . self::FIELD_TAXONOMY . "]",
+							'value'   => $field[ self::FIELD_TAXONOMY ],
 							'choices' => $tax_choices,
 						) );
 					?>
@@ -228,13 +324,13 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<?php 
 						$this->parent->create_field( array(
 							'type'    => 'select',
-							'name'    => "fields[{$key}][input_type]",
-							'value'   => $field[ 'input_type' ],
+							'name'    => "fields[{$key}][" . self::FIELD_INPUT_TYPE . "]",
+							'value'   => $field[ self::FIELD_INPUT_TYPE ],
 							'class'   => 'taxonomy_input_type',
 							'choices' => array(
-								'select'      => __( 'Select', $this->l10n_domain ),
-								'multiselect' => __( 'Multi-Select', $this->l10n_domain ),
-								'hierarchical' => __( 'Hierarchical Checkboxes', $this->l10n_domain ),
+								self::INPUT_TYPE_SELECT      => __( 'Select', $this->l10n_domain ),
+								self::INPUT_TYPE_MULTISELECT => __( 'Multi-Select', $this->l10n_domain ),
+								self::INPUT_TYPE_CHECKBOX    => __( 'Hierarchical Checkboxes', $this->l10n_domain ),
 							),
 						) );
 					?>
@@ -249,8 +345,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<?php 
 						$this->parent->create_field( array(
 							'type'    => 'radio',
-							'name'    => 'fields['.$key.'][set_post_terms]',
-							'value'   => $field[ 'set_post_terms' ],
+							'name'    => 'fields[' . $key . '][' . self::FIELD_SET_TERMS . ']',
+							'value'   => $field[ self::FIELD_SET_TERMS ],
 							'layout'  => 'horizontal',
 							'choices' => array(
 								self::SET_TERMS_NOT_SET  => __( 'Not Set', $this->l10n_domain),
@@ -270,8 +366,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<?php 
 					$this->parent->create_field(array(
 						'type'    => 'radio',
-						'name'    => 'fields['.$key.'][return_value_type]',
-						'value'   => $field[ 'return_value_type' ],
+						'name'    => 'fields[' . $key . '][' . self::FIELD_RETURN_TYPE . ']',
+						'value'   => $field[ self::FIELD_RETURN_TYPE ],
 						'layout'  => 'horizontal',
 						'choices' => array(
 							'link'   => __( 'Links', $this->l10n_domain),
@@ -291,8 +387,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<?php 
 						$this->parent->create_field( array(
 							'type'    => 'select',
-							'name'    => "fields[{$key}][input_size]",
-							'value'   => $field[ 'input_size' ],
+							'name'    => "fields[{$key}][" . self::FIELD_INPUT_SIZE . "]",
+							'value'   => $field[ self::FIELD_INPUT_SIZE ],
 							'choices' => array_combine( range( 3, 15, 2 ), range( 3, 15, 2 ) ),
 						) );
 					?>
@@ -308,7 +404,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 	public function update_value( $post_id, $field, $value ) {
 		$this->set_field_defaults( $field );
 		
-		if( in_array( $field[ 'set_post_terms' ], array( self::SET_TERMS_APPEND, self::SET_TERMS_OVERRIDE ) ) ) {
+		if( in_array( $field[ self::FIELD_SET_TERMS ], array( self::SET_TERMS_APPEND, self::SET_TERMS_OVERRIDE ) ) ) {
 			$terms = array();
 			foreach( (array) $value as $item ) {
 				if( intval( $item ) > 0 )
@@ -316,7 +412,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 				else
 					$terms[] = strval( $item );
 			}
-			wp_set_object_terms( $post_id, $terms, $field[ 'taxonomy' ], $field[ 'set_post_terms' ] == self::SET_TERMS_APPEND );
+			wp_set_object_terms( $post_id, $terms, $field[ self::FIELD_TAXONOMY ], $field[ self::FIELD_SET_TERMS ] == self::SET_TERMS_APPEND );
 		}
 		
 		parent::update_value( $post_id, $field, $value );
@@ -349,19 +445,19 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$terms = array();
 		
 		//If terms are set on the post, we can let WordPress create the list
-		if( in_array( $field[ 'set_post_terms' ], array( self::SET_TERMS_APPEND, self::SET_TERMS_OVERRIDE ) ) ) {
-			switch ( $field[ 'return_value_type' ] ) {
+		if( in_array( $field[ self::FIELD_SET_TERMS ], array( self::SET_TERMS_APPEND, self::SET_TERMS_OVERRIDE ) ) ) {
+			switch ( $field[ self::FIELD_RETURN_TYPE ] ) {
 				case 'id':
-					$the_terms = get_the_terms( $post_id, $field[ 'taxonomy' ] );
+					$the_terms = get_the_terms( $post_id, $field[ self::FIELD_TAXONOMY ] );
 					foreach ($the_terms as $term) {
 						$terms[] = $term->term_id;
 					}
 					return $terms;
 				case 'object':
-					return get_the_terms( $post_id, $field[ 'taxonomy' ] );
+					return get_the_terms( $post_id, $field[ self::FIELD_TAXONOMY ] );
 				case 'link':
 				default:
-					return get_the_term_list( $post_id, $field[ 'taxonomy' ] );
+					return get_the_term_list( $post_id, $field[ self::FIELD_TAXONOMY ] );
 			}
 		}
 		
@@ -372,10 +468,10 @@ class ACF_Taxonomy_Field extends acf_Field {
 		
 		foreach( $value as $term_id ) {
 			$term_id = intval( $term_id );
-			$term = get_term( $term_id, $field[ 'taxonomy' ] );
-			$link = get_term_link( $term, $field[ 'taxonomy' ] );
+			$term = get_term( $term_id, $field[ self::FIELD_TAXONOMY ] );
+			$link = get_term_link( $term, $field[ self::FIELD_TAXONOMY ] );
 			if( !is_wp_error( $link ) )
-				switch ( $field[ 'return_value_type' ] ) {
+				switch ( $field[ self::FIELD_RETURN_TYPE ] ) {
 					case 'id':
 						$terms[] = $term_id;
 					case 'object':
@@ -391,14 +487,14 @@ class ACF_Taxonomy_Field extends acf_Field {
 		if( empty( $terms ) )
 			return false;
 		
-		switch ( $field[ 'return_value_type' ] ) {
+		switch ( $field[ self::FIELD_RETURN_TYPE ] ) {
 			case 'id':
 			case 'object':
 				return $terms;
 			case 'link':
 			default:
 				//Allow plugins to modify
-				$terms = apply_filters( "term_links-{$field[ 'taxonomy' ]}", $terms );
+				$terms = apply_filters( "term_links-{$field[ self::FIELD_TAXONOMY ]}", $terms );
 				return join( '', $terms );
 		}
 	}
@@ -435,7 +531,7 @@ class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 		if ( $taxonomy == 'category' )
 			$name = 'post_category';
 		else
-			$name = $this->field['name'];
+			$name = $this->field[ self::FIELD_NAME ];
 
 		$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
 		$output .= "\n<li id='{$taxonomy}-{$category->term_id}-{$name}'$class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '-' . $name . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
@@ -461,7 +557,7 @@ class ACF_Walker_Taxonomy_Field_List extends Walker {
 	}
 	
 	function start_el( &$output, $object, $depth, $args, $current_object_id = 0 ) {
-		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ 'value' ] ), true, false ) . '>' . str_repeat( '&nbsp;', $depth * 3 ) . esc_attr( $object->name ) . '</option>';
+		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ ACF_Taxonomy_Field::FIELD_VALUE ] ), true, false ) . '>' . str_repeat( '&nbsp;', $depth * 3 ) . esc_attr( $object->name ) . '</option>';
 	}
 }
 endif; //class_exists 'ACF_Walker_Taxonomy_Field_List'
