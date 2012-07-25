@@ -442,61 +442,40 @@ class ACF_Taxonomy_Field extends acf_Field {
 	public function get_value_for_api( $post_id, $field ) {
 		$this->set_field_defaults( $field );
 		
-		$terms = array();
+		$value = parent::get_value_for_api( $post_id, $field );
+		$value = is_array( $value ) ? $value : array();
 		
-		//If terms are set on the post, we can let WordPress create the list
-		if( in_array( $field[ self::FIELD_SET_TERMS ], array( self::SET_TERMS_APPEND, self::SET_TERMS_OVERRIDE ) ) ) {
-			switch ( $field[ self::FIELD_RETURN_TYPE ] ) {
-				case 'id':
-					$the_terms = get_the_terms( $post_id, $field[ self::FIELD_TAXONOMY ] );
-					foreach ($the_terms as $term) {
-						$terms[] = $term->term_id;
-					}
-					return $terms;
-				case 'object':
-					return get_the_terms( $post_id, $field[ self::FIELD_TAXONOMY ] );
-				case 'link':
-				default:
-					return get_the_term_list( $post_id, $field[ self::FIELD_TAXONOMY ] );
+		$terms = array();
+		foreach( $value as $term_id ) {
+			$term_id = intval( $term_id );
+			switch( $field[ self::FIELD_RETURN_TYPE ] ) {
+				case self::RETURN_TYPE_ID:
+					$terms[] = $term_id;
+					break;
+				case self::RETURN_TYPE_OBJECT:
+					$terms[] = get_term( $term_id, $field[ self::FIELD_TAXONOMY ] );
+					break;
+				case self::RETURN_TYPE_LINK:
+					$term = get_term( $term_id, $field[ self::FIELD_TAXONOMY ] );
+					$terms[] = sprintf(
+						'<a href="%1$s" rel="tag">%2$s</a>',
+						esc_attr( get_term_link( $term, $field[ self::FIELD_TAXONOMY ] ) ),
+						esc_html( $term->name )
+					);
+					break;
 			}
 		}
 		
-		//Otherwise, loop through the terms
-		$value = parent::get_value_for_api($post_id, $field);
-		if( empty( $value ) )
-			return false;
-		
-		foreach( $value as $term_id ) {
-			$term_id = intval( $term_id );
-			$term = get_term( $term_id, $field[ self::FIELD_TAXONOMY ] );
-			$link = get_term_link( $term, $field[ self::FIELD_TAXONOMY ] );
-			if( !is_wp_error( $link ) )
-				switch ( $field[ self::FIELD_RETURN_TYPE ] ) {
-					case 'id':
-						$terms[] = $term_id;
-					case 'object':
-						$terms[] = $term;
-						break;
-					case 'link':
-					default:
-						$terms[] = '<a href="' . $link . '" rel="tag">' . $term->name . '</a>';
-						break;
-				}
-				
-		}
-		if( empty( $terms ) )
-			return false;
-		
-		switch ( $field[ self::FIELD_RETURN_TYPE ] ) {
-			case 'id':
-			case 'object':
+		switch( $field[ self::FIELD_RETURN_TYPE ] ) {
+			case self::RETURN_TYPE_ID:
+			case self::RETURN_TYPE_OBJECT:
 				return $terms;
-			case 'link':
-			default:
+			case self::RETURN_TYPE_LINK:
 				//Allow plugins to modify
 				$terms = apply_filters( "term_links-{$field[ self::FIELD_TAXONOMY ]}", $terms );
-				return join( '', $terms );
+				return implode( '', $terms );
 		}
+		return false;
 	}
 }
 
