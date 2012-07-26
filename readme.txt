@@ -3,7 +3,7 @@ Contributors: Omicron7
 Tags: acf, acf add-on, taxonomy, custom field, taxonomy field
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 1.2
+Stable tag: 1.3
 
 Adds a Taxonomy Field to Advanced Custom Fields. Select one or more taxonomy terms and assign them to the post.
 
@@ -55,6 +55,14 @@ activated. This is not a standalone plugin for WordPress, it only adds additiona
 3. Adding a term to a page.
 
 == Changelog ==
+
+= 1.3 =
+* Fixed issue where ACF value was incorrect when setting terms on a post. Props dmeehan1968
+* Fixed issue with repeater returning the same value for every row when Set Post Terms is enabled. Props XedinUnknown
+* Added indentation to hierarchical taxonomies in the select or multiselect. Props dmeehan1968
+* Added the ability to append or override terms on a post. Props dmeehan1968
+* Removed unused code and improved coding practices by using constants.
+* Updated localizations
 
 = 1.2 =
 * Fixed issue Taxonomy Field not working in a Repeater Field. Props markSal
