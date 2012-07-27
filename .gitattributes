@@ -1,19 +1,11 @@
-*.as    text
-*.conf  text
-*.css   text
-*.htm   text
-*.html  text
-*.js    text
-*.log   text
-*.mxml  text
-*.php   text
-*.phtml text
-*.pl    text
-*.pm    text
-*.pot   text
-*.sql   text
-*.txt   text
-*.xml   text
-*.xsl   text
-*.rb    text
+* text=auto
+
+#Force as text files to normalize line endings
+*.css text
+*.js text
+*.php text diff=php whitespace=strip
+*.md text
+
+#Force as binary files
+*.png binary
 

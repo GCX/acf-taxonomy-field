@@ -5,7 +5,7 @@
 * Description: This plugin is an add-on for Advanced Custom Fields. It provides a dropdown of taxonomy terms and the ability to map the selected terms to the post.
 * Author:      Brian Zoetewey
 * Author URI:  https://github.com/GCX
-* Version:     1.3
+* Version:     1.3.1
 * Text Domain: acf-taxonomy-field
 * Domain Path: /languages/
 * License:     Modified BSD
@@ -48,7 +48,7 @@ if( !class_exists( 'ACF_Taxonomy_Field' ) && class_exists( 'acf_Field' ) ) :
  * Advanced Custom Fields - Taxonomy Field add-on
  * 
  * @author Brian Zoetewey <brian.zoetewey@ccci.org>
- * @version 1.3
+ * @version 1.3.1
  */
 class ACF_Taxonomy_Field extends acf_Field {
 
@@ -486,6 +486,7 @@ if( !class_exists( 'ACF_Walker_Taxonomy_Field_Checklist' ) ) :
 class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 	var $tree_type = 'category';
 	var $db_fields = array ( 'parent' => 'parent', 'id' => 'term_id' );
+	private $field;
 
 	function __construct( $field ) {
 		$this->field = $field;
@@ -510,7 +511,7 @@ class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 		if ( $taxonomy == 'category' )
 			$name = 'post_category';
 		else
-			$name = $this->field[ self::FIELD_NAME ];
+			$name = $this->field[ ACF_Taxonomy_Field::FIELD_NAME ];
 
 		$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
 		$output .= "\n<li id='{$taxonomy}-{$category->term_id}-{$name}'$class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '-' . $name . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
