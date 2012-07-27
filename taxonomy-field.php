@@ -486,6 +486,7 @@ if( !class_exists( 'ACF_Walker_Taxonomy_Field_Checklist' ) ) :
 class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 	var $tree_type = 'category';
 	var $db_fields = array ( 'parent' => 'parent', 'id' => 'term_id' );
+	private $field;
 
 	function __construct( $field ) {
 		$this->field = $field;
@@ -510,7 +511,7 @@ class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 		if ( $taxonomy == 'category' )
 			$name = 'post_category';
 		else
-			$name = $this->field[ self::FIELD_NAME ];
+			$name = $this->field[ ACF_Taxonomy_Field::FIELD_NAME ];
 
 		$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
 		$output .= "\n<li id='{$taxonomy}-{$category->term_id}-{$name}'$class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '-' . $name . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
