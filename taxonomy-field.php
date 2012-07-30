@@ -55,6 +55,7 @@ if( !function_exists( 'acf_taxonomy_field_autoloader' ) ) {
 			'ACF_Taxonomy_Field_Helper'      => '/taxonomy-field-helper.class.php',
 			'ACF_Taxonomy_Field_Walker'      => '/taxonomy-field-walker.class.php',
 			'ACF_Taxonomy_Field_Checkbox'    => '/walkers/checkbox.class.php',
+			'ACF_Taxonomy_Field_MultiSelect' => '/walkers/multiselect.class.php',
 			'ACF_Taxonomy_Field_Select'      => '/walkers/select.class.php',
 		);
 		
