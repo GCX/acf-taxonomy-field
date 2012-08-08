@@ -5,7 +5,7 @@
 * Description: This plugin is an add-on for Advanced Custom Fields. It provides a dropdown of taxonomy terms and the ability to map the selected terms to the post.
 * Author:      Brian Zoetewey
 * Author URI:  https://github.com/GCX
-* Version:     1.3.1
+* Version:     1.4
 * Text Domain: acf-taxonomy-field
 * Domain Path: /languages/
 * License:     Modified BSD
@@ -48,7 +48,6 @@ if( !function_exists( 'acf_taxonomy_field_autoloader' ) ) {
 	 * @param string $classname Class name autoload is searching for
 	 */
 	function acf_taxonomy_field_autoloader( $classname ) {
-		
 		//List of classes and their location
 		$classes = array(
 			'ACF_Taxonomy_Field'             => '/taxonomy-field.class.php',
