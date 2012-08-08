@@ -5,7 +5,7 @@
 * Description: This plugin is an add-on for Advanced Custom Fields. It provides a dropdown of taxonomy terms and the ability to map the selected terms to the post.
 * Author:      Brian Zoetewey
 * Author URI:  https://github.com/GCX
-* Version:     1.3.1
+* Version:     1.4
 * Text Domain: acf-taxonomy-field
 * Domain Path: /languages/
 * License:     Modified BSD
@@ -48,7 +48,7 @@ if( !class_exists( 'ACF_Taxonomy_Field' ) && class_exists( 'acf_Field' ) ) :
  * Advanced Custom Fields - Taxonomy Field add-on
  * 
  * @author Brian Zoetewey <brian.zoetewey@ccci.org>
- * @version 1.3.1
+ * @version 1.4
  */
 class ACF_Taxonomy_Field extends acf_Field {
 
@@ -99,6 +99,12 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @var string
 	 */
 	const FIELD_RETURN_TYPE = 'return_value_type';
+
+	/**
+	 * Field use post terms for value
+	 * @var string
+	 */
+	const FIELD_USE_TERMS = 'use_post_terms';
 
 	/**
 	 * Input Type select
@@ -223,6 +229,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$field[ self::FIELD_TAXONOMY ]   = ( array_key_exists( self::FIELD_TAXONOMY, $field ) && isset( $field[ self::FIELD_TAXONOMY ] ) ) ? $field[ self::FIELD_TAXONOMY ] : 'category';
 		$field[ self::FIELD_INPUT_TYPE ] = ( array_key_exists( self::FIELD_INPUT_TYPE, $field ) && isset( $field[ self::FIELD_INPUT_TYPE ] ) ) ? $field[ self::FIELD_INPUT_TYPE ] : self::INPUT_TYPE_SELECT;
 		$field[ self::FIELD_INPUT_SIZE ] = ( array_key_exists( self::FIELD_INPUT_SIZE, $field ) && isset( $field[ self::FIELD_INPUT_SIZE ] ) ) ? (int) $field[ self::FIELD_INPUT_SIZE ] : 5;
+		$field[ self::FIELD_USE_TERMS ]  = ( array_key_exists( self::FIELD_USE_TERMS, $field ) && isset( $field[ self::FIELD_USE_TERMS ] ) ) ? (int) $field[ self::FIELD_USE_TERMS ] : 0; //default false
 
 		$field[ self::FIELD_SET_TERMS ]  = ( array_key_exists( self::FIELD_SET_TERMS, $field ) && isset( $field[ self::FIELD_SET_TERMS ] ) ) ? $field[ self::FIELD_SET_TERMS ] : self::SET_TERMS_NOT_SET;
 		if( $field[ self::FIELD_SET_TERMS ] == '1' ) $field[ self::FIELD_SET_TERMS ] = self::SET_TERMS_OVERRIDE;
@@ -359,6 +366,23 @@ class ACF_Taxonomy_Field extends acf_Field {
 			</tr>
 			<tr class="field_option field_option_<?php echo $this->name; ?>">
 				<td class="label">
+					<label><?php _e( 'Use Post Terms for Field Value' , $this->l10n_domain ); ?></label>
+					<p class="description"><?php _e( 'Pre-populate the field value using the terms assigned to the post.', $this->l10n_domain ); ?></p>
+				</td>
+				<td>
+					<?php
+						$this->parent->create_field( array(
+							'type'    => 'true_false',
+							'name'    => 'fields[' . $key . '][' . self::FIELD_USE_TERMS . ']',
+							'value'   => $field[ self::FIELD_USE_TERMS ],
+							'message' => __( 'Pre-populate the field value', $this->l10n_domain ),
+						) );
+					?>
+					<p class="description"><?php _e( 'Setting this option will cause the field value as well as the get_value() api call to use the terms assigned to the post as the value of the field. Enabling this option when using a Repeater or the same taxonomy multiple times in an ACF group will cause all the taxonomy fields have the same values, regardless of the values selected.', $this->l10n_domain ); ?></p>
+				</td>
+			</tr>
+			<tr class="field_option field_option_<?php echo $this->name; ?>">
+				<td class="label">
 					<label><?php _e( 'Return Value', $this->l10n_domain ); ?></label>
 					<p class="description"><?php _e( 'Choose the field value type returned by API calls.', $this->l10n_domain ); ?></p>
 				</td>
@@ -424,10 +448,13 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 * @see acf_Field::get_value()
 	 * @param int $post_id
 	 * @param array $field
-	 * @return mixed  
+	 * @return array
 	 */
 	public function get_value( $post_id, $field ) {
-		$value = (array) parent::get_value( $post_id, $field );
+		$value = ( $field[ self::FIELD_USE_TERMS ] ) ?
+			wp_get_object_terms( $post_id, $field[ self::FIELD_TAXONOMY ], array( 'fields' => 'ids' ) ) :
+			parent::get_value( $post_id, $field );
+		$value = is_array( $value ) ? $value : array();
 		return $value;
 	}
 	
@@ -441,7 +468,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 	 */
 	public function get_value_for_api( $post_id, $field ) {
 		$this->set_field_defaults( $field );
-		
+
 		$value = parent::get_value_for_api( $post_id, $field );
 		$value = is_array( $value ) ? $value : array();
 		
