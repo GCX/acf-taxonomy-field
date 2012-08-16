@@ -204,7 +204,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 		
 		//Build the base relative uri by searching backwards until we encounter the wordpress ABSPATH
 		//This may not work if the $base_dir contains a symlink outside of the WordPress ABSPATH
-		$root = array_pop( explode( DIRECTORY_SEPARATOR, rtrim( realpath( ABSPATH ), '/' ) ) );
+		$array = explode( DIRECTORY_SEPARATOR, rtrim( realpath( ABSPATH ), '/' ) );
+		$root = array_pop($array);
 		$path_parts = explode( DIRECTORY_SEPARATOR, $this->base_dir );
 		$parts = array();
 		while( $part = array_pop( $path_parts ) ) {
