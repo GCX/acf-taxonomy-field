@@ -5,7 +5,7 @@
 * Description: This plugin is an add-on for Advanced Custom Fields. It provides a dropdown of taxonomy terms and the ability to map the selected terms to the post.
 * Author:      Brian Zoetewey
 * Author URI:  https://github.com/GCX
-* Version:     1.4
+* Version:     2.0
 * Text Domain: acf-taxonomy-field
 * Domain Path: /languages/
 * License:     Modified BSD
