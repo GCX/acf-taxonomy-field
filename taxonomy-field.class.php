@@ -121,18 +121,12 @@ class ACF_Taxonomy_Field extends acf_Field {
 	private $base_dir;
 
 	/**
-	 * Relative Uri from the WordPress ABSPATH constant
-	 * @var string
-	 */
-	private $base_uri_rel;
-
-	/**
 	 * Absolute Uri
 	 *
 	 * This is used to create urls to CSS and JavaScript files.
 	 * @var string
 	 */
-	private $base_uri_abs;
+	private $base_uri;
 
 	/**
 	 * WordPress Localization Text Domain
@@ -153,21 +147,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 		//Get the textdomain from the Helper class
 		$this->l10n_domain = ACF_Taxonomy_Field_Helper::L10N_DOMAIN;
 
-		//Base directory of this field
-		$this->base_dir = rtrim( dirname( realpath( __FILE__ ) ), DIRECTORY_SEPARATOR );
-
-		//Build the base relative uri by searching backwards until we encounter the wordpress ABSPATH
-		//This may not work if the $base_dir contains a symlink outside of the WordPress ABSPATH
-		$root = array_pop( explode( DIRECTORY_SEPARATOR, rtrim( realpath( ABSPATH ), '/' ) ) );
-		$path_parts = explode( DIRECTORY_SEPARATOR, $this->base_dir );
-		$parts = array();
-		while( $part = array_pop( $path_parts ) ) {
-			if( $part == $root )
-				break;
-			array_unshift( $parts, $part );
-		}
-		$this->base_uri_rel = '/' . implode( '/', $parts );
-		$this->base_uri_abs = get_site_url( null, $this->base_uri_rel );
+		$this->base_dir = plugin_dir_path( __FILE__ );
+		$this->base_uri = plugin_dir_url( __FILE__ );
 
 		$this->name  = 'taxonomy-field';
 		$this->title = __( 'Taxonomy', $this->l10n_domain );

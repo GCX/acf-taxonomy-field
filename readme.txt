@@ -30,16 +30,9 @@ https://github.com/GCX/acf-taxonomy-field/issues
 
 == Installation ==
 
-The Taxonomy Field plugin can be used as WordPress plugin or included in other plugins or themes.
-There is no need to call the Advanced Custom Fields `register_field()` method for this field.
-
 * WordPress plugin
 	1. Download the plugin and extract it to `/wp-content/plugins/` directory.
 	2. Activate the plugin through the `Plugins` menu in WordPress.
-* Added to Theme or Plugin
-	1. Download the plugin and extract it to your theme or plugin directory.
-	2. Include the `taxonomy-field.php` file in you theme's `functions.php` or plugin file.  
-	   `include_once( rtrim( dirname( __FILE__ ), '/' ) . '/acf-taxonomy-field/taxonomy-field.php' );`
 
 == Frequently Asked Questions ==
 

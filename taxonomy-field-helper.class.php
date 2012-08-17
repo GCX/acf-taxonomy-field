@@ -52,8 +52,6 @@ class ACF_Taxonomy_Field_Helper {
 	 * Constructor
 	 */
 	private function __construct() {
-		$this->lang_dir = rtrim( dirname( realpath( __FILE__ ) ), '/' ) . '/languages';
-
 		add_action( 'init', array( &$this, 'register_field' ),  5, 0 );
 		add_action( 'init', array( &$this, 'load_textdomain' ), 2, 0 );
 	}
@@ -71,8 +69,6 @@ class ACF_Taxonomy_Field_Helper {
 	 * Loads the textdomain for the current locale if it exists
 	 */
 	public function load_textdomain() {
-		$locale = get_locale();
-		$mofile = $this->lang_dir . '/' . self::L10N_DOMAIN . '-' . $locale . '.mo';
-		load_textdomain( self::L10N_DOMAIN, $mofile );
+		load_plugin_textdomain( self::L10N_DOMAIN, false, dirname( plugin_basename( __FILE__ ) ) .'/languages/' );
 	}
 }
