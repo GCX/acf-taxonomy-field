@@ -253,6 +253,10 @@ class ACF_Taxonomy_Field extends acf_Field {
 		?>
 			<select name="<?php echo $field[ self::FIELD_NAME ]; ?>[]" id="<?php echo $field[ self::FIELD_NAME ]; ?>" class="<?php echo $field[ self::FIELD_CLASS ]; ?>" <?php echo ( $field[ self::FIELD_INPUT_TYPE ] == self::INPUT_TYPE_MULTISELECT ) ? 'multiple="multiple" size="' . $field[ self::FIELD_INPUT_SIZE ] . '"' : ''; ?>>
 				<?php
+					if( $field[ self::FIELD_INPUT_TYPE ] == 'select' && $field['allow_null'] == '1') {
+						echo '<option value="null"> - Select - </option>';
+					}
+
 					wp_list_categories( array(
 						'taxonomy'     => $field[ self::FIELD_TAXONOMY ],
 						'hide_empty'   => false,
@@ -341,6 +345,54 @@ class ACF_Taxonomy_Field extends acf_Field {
 							),
 						) );
 					?>
+				</td>
+			</tr>
+			<tr class="field_option field_option_<?php echo $this->name; ?> taxonomy_field_allow_null">
+				<td class="label">
+					<label><?php _e( 'Allow Null?' , $this->l10n_domain ); ?></label>
+				</td>
+				<td>
+					<?php
+						$this->parent->create_field(array(
+							'type'	=>	'radio',
+							'name'	=>	"fields[{$key}][allow_null]",
+							'value'	=>	$field['allow_null'],
+							'choices'	=>	array(
+								'1'	=>	__( 'Yes', $this->l10n_domain ),
+								'0'	=>	__( 'No', $this->l10n_domain ),
+							),
+							'layout'	=>	'horizontal',
+						));
+					?>
+
+					<script>
+						jQuery(document).ready(function ($) {
+							<?php
+								$select = "fields[{$key}][" . self::FIELD_INPUT_TYPE . "]";
+								$select_name = 'input_method_' . $field[order_no];
+
+								$radio = "fields[{$key}][allow_null]";
+							?>
+
+							var <?php echo $select_name; ?> = $("#<?php echo addcslashes( quotemeta($select), '[]' ); ?>");
+							var allow_null_options_<?php echo $field['order_no']; ?> = input_method_<?php echo $field['order_no']; ?>.parentsUntil('table').find('.taxonomy_field_allow_null');
+
+							if( <?php echo $select_name; ?>.val() != 'select' ) {
+								allow_null_options_<?php echo $field['order_no']; ?>.hide();
+							}
+
+							<?php echo $select_name; ?>.bind('change', function() {
+								if( $(this).val() == 'select' ) {
+									allow_null_options_<?php echo $field['order_no']; ?>.show();
+								} else {
+									$("input:radio[name=<?php echo addcslashes( quotemeta($radio), '[]' ); ?>]").attr('checked', false);
+									$("input:radio[name=<?php echo addcslashes( quotemeta($radio), '[]' ); ?>]:nth(1)").attr('checked', true);
+
+									allow_null_options_<?php echo $field['order_no']; ?>.hide();
+								}
+							});
+						});
+					</script>
 				</td>
 			</tr>
 			<tr class="field_option field_option_<?php echo $this->name; ?>">
@@ -471,7 +523,11 @@ class ACF_Taxonomy_Field extends acf_Field {
 
 		$value = parent::get_value_for_api( $post_id, $field );
 		$value = is_array( $value ) ? $value : array();
-		
+
+		if( $field[ self::FIELD_INPUT_TYPE ] == 'select' && $field['allow_null'] == '1' && in_array( 'null', $value ) ) {
+			return false;
+		}
+
 		$terms = array();
 		foreach( $value as $term_id ) {
 			$term_id = intval( $term_id );
