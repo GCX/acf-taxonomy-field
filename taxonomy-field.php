@@ -353,6 +353,8 @@ class ACF_Taxonomy_Field extends acf_Field {
 				</td>
 				<td>
 					<?php
+						$field['allow_null'] = isset($field['allow_null']) ? $field['allow_null'] : null;
+
 						$this->parent->create_field(array(
 							'type'	=>	'radio',
 							'name'	=>	"fields[{$key}][allow_null]",
@@ -367,28 +369,33 @@ class ACF_Taxonomy_Field extends acf_Field {
 
 					<script>
 						jQuery(document).ready(function ($) {
+							// Show or Hide the Option for "Allow Null" Depending on Input Method (Select, Multi-Select, Checkboxes)
+							
 							<?php
-								$select = "fields[{$key}][" . self::FIELD_INPUT_TYPE . "]";
-								$select_name = 'input_method_' . $field[order_no];
+								$digit = str_replace( array('[', ']'), '_', $key);
 
+								$selector_input = 'input_method_' . $digit;
+								$selector_radios = 'allow_null_options_' . $digit;
+								
 								$radio = "fields[{$key}][allow_null]";
+								$select = "fields[{$key}][" . self::FIELD_INPUT_TYPE . "]";
 							?>
 
-							var <?php echo $select_name; ?> = $("#<?php echo addcslashes( quotemeta($select), '[]' ); ?>");
-							var allow_null_options_<?php echo $field['order_no']; ?> = input_method_<?php echo $field['order_no']; ?>.parentsUntil('table').find('.taxonomy_field_allow_null');
+							var <?php echo $selector_input; ?> = $("#<?php echo addcslashes( quotemeta($select), '[]' ); ?>");
+							var <?php echo $selector_radios ?> = <?php echo $selector_input; ?>.parentsUntil('table').find('.taxonomy_field_allow_null');
 
-							if( <?php echo $select_name; ?>.val() != 'select' ) {
-								allow_null_options_<?php echo $field['order_no']; ?>.hide();
+							if( <?php echo $selector_input; ?>.val() != 'select' ) {
+								<?php echo $selector_radios; ?>.hide();
 							}
 
-							<?php echo $select_name; ?>.bind('change', function() {
+							<?php echo $selector_input; ?>.bind('change', function() {
 								if( $(this).val() == 'select' ) {
-									allow_null_options_<?php echo $field['order_no']; ?>.show();
+									<?php echo $selector_radios; ?>.show();
 								} else {
 									$("input:radio[name=<?php echo addcslashes( quotemeta($radio), '[]' ); ?>]").attr('checked', false);
 									$("input:radio[name=<?php echo addcslashes( quotemeta($radio), '[]' ); ?>]:nth(1)").attr('checked', true);
 
-									allow_null_options_<?php echo $field['order_no']; ?>.hide();
+									<?php echo $selector_radios; ?>.hide();
 								}
 							});
 						});
