@@ -531,7 +531,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$value = parent::get_value_for_api( $post_id, $field );
 		$value = is_array( $value ) ? $value : array();
 
-		if( $field[ self::FIELD_INPUT_TYPE ] == 'select' && $field['allow_null'] == '1' && in_array( 'null', $value ) ) {
+		if( $field[ self::FIELD_INPUT_TYPE ] == 'select' && array_key_exists( 'allow_null', $field ) && $field['allow_null'] == '1' ) {
 			return false;
 		}
 
