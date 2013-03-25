@@ -11,7 +11,7 @@ jQuery(function($) {
 
 		$(div).find('.taxonomy-field').each(function(){
 
-			$(this).filter("select").multiselect().multiselectfilter();
+			$(this).filter("select[multiple]").multiselect().multiselectfilter();
 			
 		});
 
