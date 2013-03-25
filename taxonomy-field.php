@@ -626,7 +626,7 @@ class ACF_Walker_Taxonomy_Field_List extends Walker {
 	}
 	
 	function start_el( &$output, $object, $depth, $args, $current_object_id = 0 ) {
-		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ ACF_Taxonomy_Field::FIELD_VALUE ] ), true, false ) . '>' . str_repeat( '&nbsp;', $depth * 3 ) . esc_attr( $object->name ) . '</option>';
+		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ ACF_Taxonomy_Field::FIELD_VALUE ] ), true, false ) . '>' . '&nbsp;' . str_repeat( '&ndash;', $depth ) . '&nbsp;' . esc_attr( $object->name ) . '</option>';
 	}
 }
 endif; //class_exists 'ACF_Walker_Taxonomy_Field_List'
