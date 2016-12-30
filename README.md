@@ -1,3 +1,7 @@
+**DEPRECATED**
+==============
+This plugin is no longer maintained. The functionality is provided by core Advanced Custom Fields.
+
 Advanced Custom Fields - Taxonomy Field add-on
 ==============================================
 
