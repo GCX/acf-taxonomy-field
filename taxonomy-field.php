@@ -5,7 +5,7 @@
 * Description: This plugin is an add-on for Advanced Custom Fields. It provides a dropdown of taxonomy terms and the ability to map the selected terms to the post.
 * Author:      Brian Zoetewey
 * Author URI:  https://github.com/GCX
-* Version:     1.4
+* Version:     1.5
 * Text Domain: acf-taxonomy-field
 * Domain Path: /languages/
 * License:     Modified BSD
@@ -201,12 +201,18 @@ class ACF_Taxonomy_Field extends acf_Field {
 		
 		//Base directory of this field
 		$this->base_dir = rtrim( dirname( realpath( __FILE__ ) ), DIRECTORY_SEPARATOR );
+
+		$this->settings = array(
+			'path'    => $this->get_path(),
+			'dir'     => $this->get_dir(),
+			'version' => '1.5'
+		);
 		
 		//Build the base relative uri by searching backwards until we encounter the wordpress ABSPATH
 		//This may not work if the $base_dir contains a symlink outside of the WordPress ABSPATH
-		$root = array_pop( explode( DIRECTORY_SEPARATOR, rtrim( realpath( ABSPATH ), '/' ) ) );
+		$root       = array_pop( explode( DIRECTORY_SEPARATOR, rtrim( realpath( ABSPATH ), '/' ) ) );
 		$path_parts = explode( DIRECTORY_SEPARATOR, $this->base_dir );
-		$parts = array();
+		$parts      = array();
 		while( $part = array_pop( $path_parts ) ) {
 			if( $part == $root )
 				break;
@@ -217,6 +223,62 @@ class ACF_Taxonomy_Field extends acf_Field {
 		
 		$this->name  = 'taxonomy-field';
 		$this->title = __( 'Taxonomy', $this->l10n_domain );
+
+		add_action( 'admin_enqueue_scripts', array( &$this, 'multiselect_admin_enqueue_scripts' ), 40 );
+
+		//multiselect_admin_enqueue_scripts
+	}
+
+	function get_dir() {
+		$dir = trailingslashit(dirname(__FILE__));
+
+
+		// sanitize for Win32 installs
+		$dir = str_replace('\\' ,'/', $dir); 
+
+
+		// if file is in plugins folder
+		$wp_plugin_dir = str_replace('\\' ,'/', WP_PLUGIN_DIR); 
+		$dir = str_replace($wp_plugin_dir, WP_PLUGIN_URL, $dir);
+
+
+		// if file is in wp-content folder
+		$wp_content_dir = str_replace('\\' ,'/', WP_CONTENT_DIR); 
+		$dir = str_replace($wp_content_dir, WP_CONTENT_URL, $dir);
+
+
+		return $dir;
+	}
+
+  function get_path() {
+		return trailingslashit(dirname(__FILE__));
+  }
+
+
+
+	function multiselect_admin_enqueue_scripts() {
+		// register acf scripts
+		wp_register_script( 'acf-taxonomy-multiselect', $this->settings['dir'] . 'js/jquery.multiselect.min.js', array('jquery', 'jquery-ui-widget'), $this->settings['version'] );
+		wp_register_script( 'acf-taxonomy-multiselect-filter', $this->settings['dir'] . 'js/jquery.multiselect.filter.min.js', array('jquery', 'acf-taxonomy-multiselect', 'jquery-ui-widget'), $this->settings['version'] );
+		wp_register_script( 'acf-taxonomy-multiselect-filter-admin', $this->settings['dir'] . 'js/admin.js', array( 'acf-taxonomy-multiselect-filter'), '1.42' );
+		
+		// register acf styles
+		wp_register_style( 'acf-taxonomy-multiselect', $this->settings['dir'] . 'css/jquery.multiselect.css', array(), $this->settings['version'] ); 
+		wp_register_style( 'acf-taxonomy-multiselect-filter', $this->settings['dir'] . 'css/jquery.multiselect.filter.css', array(), $this->settings['version'] );
+		wp_register_style( 'jquery-ui-wptheme', $this->settings['dir'] . 'css/jquery-ui-wptheme.css', array(), $this->settings['version'] ); 
+		
+		// scripts
+		wp_enqueue_script( 'jquery-ui-widget');
+		wp_enqueue_script( 'acf-taxonomy-multiselect' );
+		wp_enqueue_script( 'acf-taxonomy-multiselect-filter' );
+		wp_enqueue_script( 'acf-taxonomy-multiselect-filter-admin' );
+
+		// styles
+		wp_enqueue_style( 'acf-taxonomy-multiselect' );
+		wp_enqueue_style( 'acf-taxonomy-multiselect-filter' );
+		wp_enqueue_style( 'jquery-ui-wptheme' ); 
+
+		
 	}
 	
 	/**
@@ -564,7 +626,7 @@ class ACF_Walker_Taxonomy_Field_List extends Walker {
 	}
 	
 	function start_el( &$output, $object, $depth, $args, $current_object_id = 0 ) {
-		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ ACF_Taxonomy_Field::FIELD_VALUE ] ), true, false ) . '>' . str_repeat( '&nbsp;', $depth * 3 ) . esc_attr( $object->name ) . '</option>';
+		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ ACF_Taxonomy_Field::FIELD_VALUE ] ), true, false ) . '>' . '&nbsp;' . str_repeat( '&ndash;', $depth ) . '&nbsp;' . esc_attr( $object->name ) . '</option>';
 	}
 }
 endif; //class_exists 'ACF_Walker_Taxonomy_Field_List'
