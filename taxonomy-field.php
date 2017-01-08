@@ -529,7 +529,7 @@ class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 		$output .= "$indent</ul>\n";
 	}
 
-	function start_el( &$output, $category, $depth, $args, $id = 0 ) {
+	function start_el( &$output, $object, $depth = 0, $args = array(), $current_object_id = 0 ) {
 		extract($args);
 
 		if ( empty( $taxonomy ) )
@@ -540,8 +540,8 @@ class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 		else
 			$name = $this->field[ ACF_Taxonomy_Field::FIELD_NAME ];
 
-		$class = in_array( $category->term_id, $popular_cats ) ? ' class="popular-category"' : '';
-		$output .= "\n<li id='{$taxonomy}-{$category->term_id}-{$name}'$class>" . '<label class="selectit"><input value="' . $category->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $category->term_id . '-' . $name . '"' . checked( in_array( $category->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters( 'the_category', $category->name ) ) . '</label>';
+		$class = in_array( $object->term_id, $popular_cats ) ? ' class="popular-category"' : '';
+		$output .= "\n<li id='{$taxonomy}-{$object->term_id}-{$name}'$class>" . '<label class="selectit"><input value="' . $object->term_id . '" type="checkbox" name="'.$name.'[]" id="in-'.$taxonomy.'-' . $object->term_id . '-' . $name . '"' . checked( in_array( $object->term_id, $selected_cats ), true, false ) . disabled( empty( $args['disabled'] ), false, false ) . ' /> ' . esc_html( apply_filters( 'the_category', $object->name ) ) . '</label>';
 	}
 
 	function end_el( &$output, $category, $depth = 0, $args = array() ) {
@@ -563,7 +563,7 @@ class ACF_Walker_Taxonomy_Field_List extends Walker {
 		$this->field = $field;
 	}
 	
-	function start_el( &$output, $object, $depth, $args, $current_object_id = 0 ) {
+	function start_el( &$output, $object, $depth = 0, $args = array(), $current_object_id = 0 ) {
 		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ ACF_Taxonomy_Field::FIELD_VALUE ] ), true, false ) . '>' . str_repeat( '&nbsp;', $depth * 3 ) . esc_attr( $object->name ) . '</option>';
 	}
 }
