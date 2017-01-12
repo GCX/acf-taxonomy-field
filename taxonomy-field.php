@@ -15,10 +15,10 @@
 /*
  * Copyright (c) 2012, CAMPUS CRUSADE FOR CHRIST
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted provided that the following conditions are met:
- * 
+ *
  *     Redistributions of source code must retain the above copyright notice, this
  *         list of conditions and the following disclaimer.
  *     Redistributions in binary form must reproduce the above copyright notice,
@@ -27,7 +27,7 @@
  *     Neither the name of CAMPUS CRUSADE FOR CHRIST nor the names of its
  *         contributors may be used to endorse or promote products derived from this
  *         software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -46,7 +46,7 @@ if( !class_exists( 'ACF_Taxonomy_Field' ) && class_exists( 'acf_Field' ) ) :
 
 /**
  * Advanced Custom Fields - Taxonomy Field add-on
- * 
+ *
  * @author Brian Zoetewey <brian.zoetewey@ccci.org>
  * @version 1.4
  */
@@ -174,7 +174,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 
 	/**
 	 * Absolute Uri
-	 * 
+	 *
 	 * This is used to create urls to CSS and JavaScript files.
 	 * @var string
 	 */
@@ -182,7 +182,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 
 	/**
 	 * WordPress Localization Text Domain
-	 * 
+	 *
 	 * The textdomain for the field is controlled by the helper class.
 	 * @var string
 	 */
@@ -195,13 +195,13 @@ class ACF_Taxonomy_Field extends acf_Field {
 	public function __construct( $parent ) {
 		//Call parent constructor
 		parent::__construct( $parent );
-		
+
 		//Get the textdomain from the Helper class
 		$this->l10n_domain = ACF_Taxonomy_Field_Helper::L10N_DOMAIN;
-		
+
 		//Base directory of this field
 		$this->base_dir = rtrim( dirname( realpath( __FILE__ ) ), DIRECTORY_SEPARATOR );
-		
+
 		//Build the base relative uri by searching backwards until we encounter the wordpress ABSPATH
 		//This may not work if the $base_dir contains a symlink outside of the WordPress ABSPATH
 		$root = array_pop( explode( DIRECTORY_SEPARATOR, rtrim( realpath( ABSPATH ), '/' ) ) );
@@ -214,14 +214,14 @@ class ACF_Taxonomy_Field extends acf_Field {
 		}
 		$this->base_uri_rel = '/' . implode( '/', $parts );
 		$this->base_uri_abs = get_site_url( null, $this->base_uri_rel );
-		
+
 		$this->name  = 'taxonomy-field';
 		$this->title = __( 'Taxonomy', $this->l10n_domain );
 	}
-	
+
 	/**
 	 * Populates the fields array with defaults for this field type
-	 * 
+	 *
 	 * @param array $field
 	 * @return array
 	 */
@@ -238,15 +238,15 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$field[ self::FIELD_RETURN_TYPE ] = isset( $field[ self::FIELD_RETURN_TYPE ] ) ? $field[ self::FIELD_RETURN_TYPE ] : self::RETURN_TYPE_LINK;
 		return $field;
 	}
-	
+
 	/**
 	 * Creates the taxonomy field for inside post metaboxes
-	 * 
+	 *
 	 * @see acf_Field::create_field()
 	 */
 	public function create_field( $field ) {
 		$this->set_field_defaults( $field );
-		
+
 		$field[ self::FIELD_VALUE ] = is_array( $field[ self::FIELD_VALUE ] ) ? $field[ self::FIELD_VALUE ] : array();
 
 		if( in_array( $field[ self::FIELD_INPUT_TYPE ], array( self::INPUT_TYPE_SELECT, self::INPUT_TYPE_MULTISELECT ) ) ) :
@@ -273,7 +273,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 					echo "<input type='hidden' name='{$name}' value='' />";
 					?>
 					<ul id="<?php echo $id; ?>checklist" class="list:<?php echo $field[ self::FIELD_TAXONOMY ]; ?> categorychecklist form-no-clear">
-						<?php 
+						<?php
 							wp_terms_checklist( 0, array(
 								'name'          => $name,
 								'checked_ontop' => false,
@@ -288,23 +288,23 @@ class ACF_Taxonomy_Field extends acf_Field {
 		<?php
 		endif;
 	}
-	
+
 	/**
 	 * Builds the field options
-	 * 
+	 *
 	 * @see acf_Field::create_options()
 	 * @param string $key
 	 * @param array $field
 	 */
 	public function create_options( $key, $field ) {
 		$this->set_field_defaults( $field );
-		
+
 		$taxonomies = get_taxonomies( array(), 'objects' );
 		ksort( $taxonomies );
 		$tax_choices = array();
 		foreach( $taxonomies as $tax )
 			$tax_choices[ $tax->name ] = $tax->label;
-		
+
 		?>
 			<tr class="field_option field_option_<?php echo $this->name; ?>">
 				<td class="label">
@@ -312,7 +312,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<p class="description"><?php _e( 'Select the taxonomy to display.', $this->l10n_domain ); ?></p>
 				</td>
 				<td>
-					<?php 
+					<?php
 						$this->parent->create_field( array(
 							'type'    => 'select',
 							'name'    => "fields[{$key}][" . self::FIELD_TAXONOMY . "]",
@@ -328,7 +328,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<p class="description"><?php _e( '', $this->l10n_domain ); ?></p>
 				</td>
 				<td>
-					<?php 
+					<?php
 						$this->parent->create_field( array(
 							'type'    => 'select',
 							'name'    => "fields[{$key}][" . self::FIELD_INPUT_TYPE . "]",
@@ -349,7 +349,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<p class="description"><?php _e( 'Add the selected term(s) to the post. The current post must support the selected taxonomy for this to work.', $this->l10n_domain ); ?></p>
 				</td>
 				<td>
-					<?php 
+					<?php
 						$this->parent->create_field( array(
 							'type'    => 'radio',
 							'name'    => 'fields[' . $key . '][' . self::FIELD_SET_TERMS . ']',
@@ -387,7 +387,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<p class="description"><?php _e( 'Choose the field value type returned by API calls.', $this->l10n_domain ); ?></p>
 				</td>
 				<td>
-					<?php 
+					<?php
 					$this->parent->create_field(array(
 						'type'    => 'radio',
 						'name'    => 'fields[' . $key . '][' . self::FIELD_RETURN_TYPE . ']',
@@ -408,7 +408,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 					<p class="description"><?php _e( 'The number of terms to show at once in a multi-select.', $this->l10n_domain ); ?></p>
 				</td>
 				<td>
-					<?php 
+					<?php
 						$this->parent->create_field( array(
 							'type'    => 'select',
 							'name'    => "fields[{$key}][" . self::FIELD_INPUT_SIZE . "]",
@@ -420,14 +420,14 @@ class ACF_Taxonomy_Field extends acf_Field {
 			</tr>
 		<?php
 	}
-	
+
 	/**
 	 * (non-PHPdoc)
 	 * @see acf_Field::update_value()
 	 */
 	public function update_value( $post_id, $field, $value ) {
 		$this->set_field_defaults( $field );
-		
+
 		if( in_array( $field[ self::FIELD_SET_TERMS ], array( self::SET_TERMS_APPEND, self::SET_TERMS_OVERRIDE ) ) ) {
 			$terms = array();
 			foreach( (array) $value as $item ) {
@@ -438,13 +438,13 @@ class ACF_Taxonomy_Field extends acf_Field {
 			}
 			wp_set_object_terms( $post_id, $terms, $field[ self::FIELD_TAXONOMY ], $field[ self::FIELD_SET_TERMS ] == self::SET_TERMS_APPEND );
 		}
-		
+
 		parent::update_value( $post_id, $field, $value );
 	}
-	
+
 	/**
 	 * Returns the values of the field
-	 * 
+	 *
 	 * @see acf_Field::get_value()
 	 * @param int $post_id
 	 * @param array $field
@@ -457,10 +457,10 @@ class ACF_Taxonomy_Field extends acf_Field {
 		$value = is_array( $value ) ? $value : array();
 		return $value;
 	}
-	
+
 	/**
 	 * Returns the value of the field for the advanced custom fields API
-	 * 
+	 *
 	 * @see acf_Field::get_value_for_api()
 	 * @param int $post_id
 	 * @param array $field
@@ -471,7 +471,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 
 		$value = parent::get_value_for_api( $post_id, $field );
 		$value = is_array( $value ) ? $value : array();
-		
+
 		$terms = array();
 		foreach( $value as $term_id ) {
 			$term_id = intval( $term_id );
@@ -492,7 +492,7 @@ class ACF_Taxonomy_Field extends acf_Field {
 					break;
 			}
 		}
-		
+
 		switch( $field[ self::FIELD_RETURN_TYPE ] ) {
 			case self::RETURN_TYPE_ID:
 			case self::RETURN_TYPE_OBJECT:
@@ -529,7 +529,7 @@ class ACF_Walker_Taxonomy_Field_Checklist extends Walker {
 		$output .= "$indent</ul>\n";
 	}
 
-	function start_el( &$output, $category, $depth, $args, $id = 0 ) {
+	function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
 		extract($args);
 
 		if ( empty( $taxonomy ) )
@@ -562,8 +562,8 @@ class ACF_Walker_Taxonomy_Field_List extends Walker {
 	function __construct( $field ) {
 		$this->field = $field;
 	}
-	
-	function start_el( &$output, $object, $depth, $args, $current_object_id = 0 ) {
+
+	function start_el( &$output, $object, $depth = 0, $args = array(), $current_object_id = 0 ) {
 		$output .= '<option value="' . esc_attr( $object->term_id ) . '" ' . selected( in_array( (int) $object->term_id, $this->field[ ACF_Taxonomy_Field::FIELD_VALUE ] ), true, false ) . '>' . str_repeat( '&nbsp;', $depth * 3 ) . esc_attr( $object->name ) . '</option>';
 	}
 }
@@ -574,7 +574,7 @@ if( !class_exists( 'ACF_Taxonomy_Field_Helper' ) ) :
 
 /**
  * Advanced Custom Fields - Taxonomy Field Helper
- * 
+ *
  * @author Brian Zoetewey <brian.zoetewey@ccci.org>
  */
 class ACF_Taxonomy_Field_Helper {
@@ -583,10 +583,10 @@ class ACF_Taxonomy_Field_Helper {
 	 * @var ACF_Taxonomy_Field_Helper
 	 */
 	private static $instance;
-	
+
 	/**
 	 * Returns the ACF_Taxonomy_Field_Helper singleton
-	 * 
+	 *
 	 * <code>$obj = ACF_Taxonomy_Field_Helper::singleton();</code>
 	 * @return ACF_Taxonomy_Field_Helper
 	 */
@@ -597,14 +597,14 @@ class ACF_Taxonomy_Field_Helper {
 		}
 		return self::$instance;
 	}
-	
+
 	/**
 	 * Prevent cloning of the ACF_Taxonomy_Field_Helper object
 	 * @internal
 	 */
 	private function __clone() {
 	}
-	
+
 	/**
 	* WordPress Localization Text Domain
 	*
@@ -612,25 +612,25 @@ class ACF_Taxonomy_Field_Helper {
 	* @var string
 	*/
 	const L10N_DOMAIN = 'acf-taxonomy-field';
-	
+
 	/**
 	 * Language directory path
-	 * 
+	 *
 	 * Used to build the path for WordPress localization files.
 	 * @var string
 	 */
 	private $lang_dir;
-	
+
 	/**
 	 * Constructor
 	 */
 	private function __construct() {
 		$this->lang_dir = rtrim( dirname( realpath( __FILE__ ) ), '/' ) . '/languages';
-		
+
 		add_action( 'init', array( &$this, 'register_field' ),  5, 0 );
 		add_action( 'init', array( &$this, 'load_textdomain' ), 2, 0 );
 	}
-	
+
 	/**
 	 * Registers the Field with Advanced Custom Fields
 	 */
@@ -639,7 +639,7 @@ class ACF_Taxonomy_Field_Helper {
 			register_field( 'ACF_Taxonomy_Field', __FILE__ );
 		}
 	}
-	
+
 	/**
 	 * Loads the textdomain for the current locale if it exists
 	 */
